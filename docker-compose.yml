@@ -1,0 +1,29 @@
+# Desenvolvimento local. Banco e autenticacao continuam hospedados no Supabase.
+services:
+  api:
+    build: ./backend
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+      - laravel_vendor:/app/vendor
+    ports:
+      - "127.0.0.1:8000:8000"
+    command: ["sh", "/app/docker-start.sh"]
+    restart: unless-stopped
+  web:
+    environment:
+      API_PROXY_TARGET: http://api:8000
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - react_node_modules:/app/node_modules
+    ports:
+      - "127.0.0.1:5173:5173"
+    command: ["sh", "-c", "npm install --no-audit --no-fund && npm run dev"]
+    depends_on:
+      - api
+    restart: unless-stopped
+volumes:
+  laravel_vendor:
+  react_node_modules:
