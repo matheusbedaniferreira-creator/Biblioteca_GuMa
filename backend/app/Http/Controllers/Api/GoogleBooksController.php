@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Client\ConnectionException;
 
 /** Public Google Books discovery; intentionally separate from physical library inventory. */
@@ -15,9 +16,17 @@ final class GoogleBooksController
             'start' => 'nullable|integer|min:0|max:900',
         ]);
         $query = trim($data['q']);
+        $start = (int) ($data['start'] ?? 0);
+        // Cache only public book metadata, never authentication credentials.
+        $cacheKey = 'google_books:v1:'.hash('sha256', mb_strtolower($query, 'UTF-8').'|'.$start);
+        $cached = Cache::get($cacheKey);
+        if (is_array($cached)) {
+            return response()->json($cached);
+        }
+
         $parameters = [
             'q' => $query,
-            'startIndex' => (int) ($data['start'] ?? 0),
+            'startIndex' => $start,
             'maxResults' => 12,
             'printType' => 'books',
             'projection' => 'full',
@@ -26,7 +35,7 @@ final class GoogleBooksController
         if ($key = config('services.google_books.key')) $parameters['key'] = $key;
         try {
             // Fixed HTTPS host, never a user-supplied URL (avoids SSRF).
-            $response = Http::timeout(8)->retry(2, 200, throw: false)->acceptJson()
+            $response = Http::timeout(10)->acceptJson()
                 ->get('https://www.googleapis.com/books/v1/volumes', $parameters);
             if (!$response->successful()) {
                 // Nao exponha o corpo da resposta remota: ele pode conter dados de infraestrutura.
@@ -58,12 +67,15 @@ final class GoogleBooksController
                     'info_url' => isset($v['infoLink']) && str_starts_with($v['infoLink'], 'https://books.google.') ? $v['infoLink'] : null,
                 ];
             })->values();
-            return response()->json(['total' => (int) $response->json('totalItems', 0), 'items' => $items]);
-         } catch (ConnectionException $e) {
+            $payload = ['total' => (int) $response->json('totalItems', 0), 'items' => $items];
+            // Only successful results are cached. HTTP 429/403/5xx never poison the cache.
+            Cache::put($cacheKey, $payload, now()->addHours(6));
+            return response()->json($payload);
+        } catch (ConnectionException $e) {
             report($e);
             return response()->json(['message' => 'Nao foi possivel conectar ao Google Books. Confira a rede do container Laravel.'], 503);
         } catch (\Illuminate\Http\Client\RequestException $e) {
-            // Defesa em profundidade caso uma excecao HTTP atravesse o retry.
+            // Defesa em profundidade caso o cliente HTTP lance uma excecao.
             report($e);
             return response()->json(['message' => 'Falha na resposta do Google Books (HTTP '.$e->response->status().').'], 502);
         }
