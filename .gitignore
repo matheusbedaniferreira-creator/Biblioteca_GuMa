@@ -1,0 +1,11 @@
+**/.env
+**/.env.*
+!**/.env.example
+**/vendor/
+**/node_modules/
+**/dist/
+**/.DS_Store
+**/*.log
+**/storage/framework/sessions/*
+**/storage/logs/*
+!**/.gitkeep
