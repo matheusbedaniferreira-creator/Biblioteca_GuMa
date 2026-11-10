@@ -26,10 +26,18 @@ final class GoogleBooksController
         if ($key = config('services.google_books.key')) $parameters['key'] = $key;
         try {
             // Fixed HTTPS host, never a user-supplied URL (avoids SSRF).
-            $response = Http::timeout(8)->retry(2, 200)->acceptJson()
+            $response = Http::timeout(8)->retry(2, 200, throw: false)->acceptJson()
                 ->get('https://www.googleapis.com/books/v1/volumes', $parameters);
             if (!$response->successful()) {
-                return response()->json(['message' => 'Google Books indisponível no momento.'], 502);
+                // Nao exponha o corpo da resposta remota: ele pode conter dados de infraestrutura.
+                $status = $response->status();
+                if ($status === 403) {
+                    return response()->json(['message' => 'Google Books recusou a consulta (403). Confira a chave e a ativacao da API no Google Cloud, se estiver usando uma chave.'], 502);
+                }
+                if ($status === 429) {
+                    return response()->json(['message' => 'Limite de consultas ao Google Books atingido. Tente novamente mais tarde.'], 503);
+                }
+                return response()->json(['message' => 'Google Books indisponivel no momento (HTTP '.$status.').'], 502);
             }
             $items = collect($response->json('items') ?? [])->map(function ($item) {
                 $v = $item['volumeInfo'] ?? [];
@@ -51,8 +59,13 @@ final class GoogleBooksController
                 ];
             })->values();
             return response()->json(['total' => (int) $response->json('totalItems', 0), 'items' => $items]);
-        } catch (ConnectionException $e) {
-            return response()->json(['message' => 'Não foi possível conectar ao Google Books.'], 503);
+         } catch (ConnectionException $e) {
+            report($e);
+            return response()->json(['message' => 'Nao foi possivel conectar ao Google Books. Confira a rede do container Laravel.'], 503);
+        } catch (\Illuminate\Http\Client\RequestException $e) {
+            // Defesa em profundidade caso uma excecao HTTP atravesse o retry.
+            report($e);
+            return response()->json(['message' => 'Falha na resposta do Google Books (HTTP '.$e->response->status().').'], 502);
         }
     }
 }
