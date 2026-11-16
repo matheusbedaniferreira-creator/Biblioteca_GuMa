@@ -9,7 +9,7 @@ return [
     'table' => 'sessions',
     'store' => null,
     'lottery' => [2, 100],
-    'cookie' => env('SESSION_COOKIE', 'folha_biblioteca_session'),
+    'cookie' => env('SESSION_COOKIE', 'guma_biblioteca_session'),
     'path' => '/',
     'domain' => env('SESSION_DOMAIN', null),
     'secure' => (bool) env('SESSION_SECURE_COOKIE', false),
