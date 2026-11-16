@@ -23,5 +23,5 @@ export default function App() {
       <Route path="/admin" element={<Guard staff><Admin/></Guard>}/>
       <Route path="*" element={<section className="container error-panel"><h1>Página não encontrada</h1><Link className="button button-dark" to="/">Voltar ao início</Link></section>}/>
     </Routes>
-  </main><footer className="site-footer"><div className="container footer-inner"><span className="footer-brand">folha<span>.</span></span><p>Um mundo de histórias para descobrir. © {new Date().getFullYear()}</p><Link to="/catalogo">Explorar acervo</Link></div></footer></div>;
+  </main><footer className="site-footer"><div className="container footer-inner"><span className="footer-brand">GuMa</span><p>Um mundo de histórias para descobrir. © {new Date().getFullYear()}</p><Link to="/catalogo">Explorar acervo</Link></div></footer></div>;
 }
