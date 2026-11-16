@@ -1,4 +1,4 @@
-# Checklist e modelo de segurança — Biblioteca Folha
+# Checklist e modelo de segurança: Biblioteca GuMa
 
 ## Credenciais e armazenamento
 
