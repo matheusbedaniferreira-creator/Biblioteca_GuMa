@@ -46,8 +46,8 @@ export async function api(path, { method = 'GET', body, signal } = {}) {
   return data;
 }
 
-export const localDate = value => value ? new Date(`${String(value).slice(0, 10)}T12:00:00`).toLocaleDateString('pt-BR') : '—';
-export const dateTime = value => value ? new Date(value).toLocaleDateString('pt-BR') : '—';
+export const localDate = value => value ? new Date(`${String(value).slice(0, 10)}T12:00:00`).toLocaleDateString('pt-BR') : 'Data indisponível';
+export const dateTime = value => value ? new Date(value).toLocaleDateString('pt-BR') : 'Data indisponível';
 export const statusText = {
   PENDENTE: 'Aguardando analise', APROVADA: 'Retirada confirmada',
   RECUSADA: 'Recusada', CANCELADA: 'Cancelada',
