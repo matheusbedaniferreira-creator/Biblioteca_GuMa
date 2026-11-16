@@ -1,8 +1,8 @@
-# Tutorial: executar a Biblioteca Folha no Windows (passo a passo)
+# Tutorial: executar a Biblioteca GuMa no Windows (passo a passo)
 
 > Este projeto não é uma página HTML estática. É um programa **React + Vite** que faz chamadas a uma **API Laravel**. Duplo clique em `index.html` não funciona porque o navegador não compila `JSX`, não instala dependências e não inicia a API.
 
-## Parte A — O que instalar (uma única vez)
+## Parte A: O que instalar (uma única vez)
 
 1. Instale o [Docker Desktop para Windows](https://www.docker.com/products/docker-desktop/) e reinicie o computador se o instalador solicitar.
 2. Abra o Docker Desktop e aguarde o indicador de motor ativo. Se pedir WSL 2, siga a instrução do próprio programa. Teste no **PowerShell**:
@@ -12,7 +12,7 @@
    ```
 3. Instale o [VS Code](https://code.visualstudio.com/) para editar arquivos. Você não precisa instalar Node.js, PHP, Composer nem PostgreSQL separadamente se usar Docker.
 
-## Parte B — Preparar as pastas
+## Parte B: Preparar as pastas
 
 1. Extraia `biblioteca-segura.zip` (botão direito → **Extrair tudo**).
 2. Abra a pasta extraída que contém **`docker-compose.yml`**, `backend`, `frontend` e `database`.
@@ -24,7 +24,7 @@
    ```
 6. O comando criará `backend/.env` e `frontend/.env`. Se já existirem, não os sobrescreverá.
 
-## Parte C — Criar o banco Supabase
+## Parte C: Criar o banco Supabase
 
 1. Entre no [Supabase Dashboard](https://supabase.com/dashboard), escolha um projeto novo sem dados.
 2. Vá em **SQL Editor → New query**.
@@ -36,7 +36,7 @@
 
 **Se já possui dados:** faça backup e avalie as alterações antes de executar os scripts. Não apague tabelas existentes para seguir o tutorial.
 
-## Parte D — Configurar backend/.env
+## Parte D: Configurar backend/.env
 
 No VS Code, abra `backend/.env`. Copie os campos corretos do painel Supabase:
 
@@ -64,7 +64,7 @@ DB_SSLMODE=require
 
 O programa gera `APP_KEY` automaticamente no primeiro start, **não preencha um texto qualquer**. `frontend/.env` não precisa de credenciais. Não envie `.env` para colegas nem GitHub.
 
-## Parte E — Ligar o site
+## Parte E: Ligar o site
 
 No terminal aberto na raiz do projeto:
 
@@ -83,7 +83,7 @@ Ou dê duplo clique no arquivo **`iniciar-windows.bat`** na raiz.
 4. Entre em **Catálogo**; se rodou os dados de exemplo, aparecerão livros com estoque 0. Caso contrário, catálogo vazio é normal.
 5. Para encerrar, `Ctrl+C` e então `docker compose down`.
 
-## Parte F — Testar cadastro e empréstimos
+## Parte F: Testar cadastro e empréstimos
 
 1. No site → **Criar conta** → nome, e-mail, senha. Confirme o e-mail se o Supabase exigir.
 2. Entre com essa conta, abra um livro com **quantidade disponível maior que zero** (administrador deve cadastrar/ajustar exemplares).
@@ -92,7 +92,7 @@ Ou dê duplo clique no arquivo **`iniciar-windows.bat`** na raiz.
 5. Em **Painel administrativo → Solicitações**, confirme retirada. A quantidade disponível diminui.
 6. Em **Empréstimos**, registre devolução. A quantidade disponível aumenta.
 
-## Parte G — Google login (opcional)
+## Parte G: Google login (opcional)
 
 1. Google Cloud Console → Credenciais OAuth → Aplicação web. Em **Authorized redirect URIs** cadastre **`https://SEU_PROJECT_REF.supabase.co/auth/v1/callback`** (não `localhost`).
 2. Supabase → Authentication → Providers → Google → habilite e informe as credenciais do Google.
@@ -102,7 +102,7 @@ Ou dê duplo clique no arquivo **`iniciar-windows.bat`** na raiz.
 
 Google e Supabase podem alterar menus e requisitos de OAuth. Compare sempre com a documentação oficial linkada no README.
 
-## Parte H — Quando algo der errado
+## Parte H: Quando algo der errado
 
 Abra um segundo terminal PowerShell na mesma pasta e execute:
 
@@ -124,7 +124,7 @@ docker compose logs --tail=100 api
 
 **Depois de alterar `backend/.env`:** execute `docker compose restart api`. Depois de alterar `vite.config.js` ou `docker-compose.yml`, execute `docker compose down` e `docker compose up --build`.
 
-## Parte I — Sem Docker (alternativa avançada)
+## Parte I: Sem Docker (alternativa avançada)
 
 Requer **PHP 8.3+** com `pdo_pgsql`, Composer, Node.js 22+ e configuração correta do PostgreSQL:
 
