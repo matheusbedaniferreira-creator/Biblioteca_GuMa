@@ -1,4 +1,4 @@
-# Revisão técnica e segurança — 09/11/2026
+# Revisão técnica e segurança: 09/11/2026
 
 ## Escopo
 
