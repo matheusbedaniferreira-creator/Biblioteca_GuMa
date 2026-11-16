@@ -9,6 +9,7 @@ import AuthCallback from './pages/AuthCallback';
 import MyAccount from './pages/MyAccount';
 import Admin from './pages/Admin';
 import Discover from './pages/Discover';
+import Security from './pages/Security';
 
 export default function App() {
   return <div className="app-shell"><NavBar/><main>
@@ -16,6 +17,7 @@ export default function App() {
       <Route path="/" element={<Home/>}/>
       <Route path="/catalogo" element={<Catalog/>}/>
       <Route path="/descobrir" element={<Discover/>}/>
+      <Route path="/seguranca" element={<Security/>}/>
       <Route path="/livro/:id" element={<BookDetail/>}/>
       <Route path="/login" element={<Login/>}/>
       <Route path="/auth/callback" element={<AuthCallback/>}/>

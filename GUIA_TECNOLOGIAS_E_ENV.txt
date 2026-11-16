@@ -1,0 +1,205 @@
+GuMa - guia prático de arquitetura, ambiente e atualização
+
+1. visão geral do projeto
+
+A GuMa é uma aplicação full stack de biblioteca. O frontend foi feito em React com Vite. O backend foi feito em PHP com Laravel. O banco de dados e a autenticação ficam no Supabase, usando PostgreSQL e Supabase Auth. O Docker serve para subir tudo isso localmente com menos atrito.
+
+Fluxo resumido:
+usuário -> React -> rota /api -> Laravel -> Supabase/PostgreSQL
+
+2. o que é o arquivo .env
+
+O arquivo .env é o local onde ficam variáveis de ambiente privadas ou sensíveis. Ele não deve ir para o GitHub público. Nesse arquivo você guarda:
+
+- URL do Supabase
+- chave publicável do Supabase
+- host, porta, usuário e senha do banco
+- URL do frontend
+- chave do Google Books, se quiser usar no backend
+- valores de sessão e cookies
+- um pepper, se você quiser usar em rotinas internas no servidor
+
+Exemplo ilustrativo de variável (NÃO É UMA FUNÇÃO ATIVA DO LOGIN):
+PASSWORD_PEPPER=exemplo_de_valor_local_sem_ser_uma_chave_real
+
+O frontend não deve conhecer esse valor. Se um segredo aparece em arquivo VITE_ ou dentro do React, ele deixa de ser segredo.
+
+3. env.example x .env
+
+.env.example:
+- modelo do que precisa ser preenchido
+- pode ir para o GitHub
+- não guarda segredo real
+
+.env:
+- arquivo real que sua máquina usa
+- contém senha do banco e demais chaves
+- não deve ser publicado
+
+4. docker e docker compose
+
+O Docker empacota a aplicação em containers. Isso evita o problema de "na minha máquina funciona". Em vez de instalar tudo manualmente, você sobe os serviços com o mesmo ambiente esperado pelo projeto.
+
+No seu projeto, o docker compose junta principalmente:
+- frontend React/Vite
+- backend Laravel/PHP
+
+Quando você roda:
+
+docker compose up -d --build
+
+acontece isso:
+- o Docker lê o docker-compose.yml
+- constrói as imagens, se necessário
+- sobe os containers
+- deixa o frontend e o backend rodando juntos
+
+Comando útil:
+- docker compose up -d --build -> sobe ou reconstrói
+- docker compose down -> derruba tudo
+- docker compose ps -> mostra o que está rodando
+- docker compose logs -f -> acompanha os logs
+- docker compose restart -> reinicia os containers
+
+5. o papel do PHP
+
+PHP é a linguagem usada no backend. Aqui ela executa a lógica do servidor:
+- recebe requisições do frontend
+- valida dados
+- conversa com o Supabase
+- chama APIs externas, como Google Books
+- controla sessão e segurança do lado do servidor
+
+6. o papel do Laravel
+
+Laravel é o framework PHP do projeto. Ele organiza o backend em uma estrutura melhor:
+- rotas
+- controllers
+- validação
+- sessão e CSRF
+- configuração por arquivos
+- integração mais limpa com banco e serviços
+
+Nesse projeto, o Laravel funciona como a camada de API principal. Ele evita expor lógica sensível no frontend.
+
+7. o papel do React
+
+React cuida da interface que o usuário vê.
+- mostra páginas
+- faz busca no catálogo
+- exibe recomendações
+- mostra painel do cliente e do administrador
+- consome a API do Laravel
+
+O React não deve guardar senha em cache. Neste projeto, a ideia é manter tokens e sessão apenas em memória ou via sessão segura do backend.
+
+8. o papel do Supabase
+
+O Supabase foi usado por quatro motivos principais:
+- banco PostgreSQL
+- autenticação
+- organização das tabelas
+- integração simples com aplicações web
+
+No projeto da GuMa, o Supabase guarda entidades como:
+- clientes
+- bibliotecários
+- autores
+- bibliotecas
+- livros
+- solicitações
+- empréstimos
+
+9. segurança: hash, salt e pepper
+
+Hash:
+- transforma a senha em uma representação irreversível
+- senha não deve ser salva em texto puro
+
+Salt:
+- valor aleatório por senha
+- evita que senhas iguais gerem exatamente o mesmo hash
+- dificulta rainbow tables
+
+Pepper:
+- segredo adicional do servidor
+- deve ficar apenas no backend ou no .env
+- nunca deve ser enviado ao navegador
+
+No caso do Supabase Auth, o armazenamento seguro e a verificação da senha são feitos pelo próprio provedor de autenticação. Por isso, o PASSWORD_PEPPER neste projeto é APENAS um placeholder opcional, sem ligação com o login atual. Não basta adicionar uma variável no .env para que ela passe a proteger senhas. Você não deve salvar senha manualmente em tabela própria.
+
+10. Google Books API
+
+Ela foi incluída para melhorar busca, capa e descrição de livros.
+Fluxo:
+- usuário pesquisa no frontend
+- Laravel consulta a Google Books API
+- backend devolve os resultados prontos
+- frontend exibe capa, autores e descrição
+
+Vantagem:
+- a chave da API pode ficar no servidor, sem aparecer no navegador
+
+11. o que mudou nesta atualização
+
+- nome visual alterado para GuMa
+- home com seção de livros recomendados
+- carrossel com imagem editorial de livros em destaque
+- carrossel com entrevista literária do YouTube; o vídeo pode ter restrições de incorporação definidas pelo canal
+- seção explicando segurança e criptografia
+- imagem do carrossel adicionada ao frontend
+- textos de marca atualizados
+
+12. como colocar essas atualizações no Docker
+
+Passo 1:
+feche o terminal atual com Ctrl + C, se ele estiver preso mostrando logs.
+
+Passo 2:
+na pasta do projeto, substitua os arquivos antigos pelos novos.
+
+Passo 3:
+confira se o backend/.env continua com suas credenciais corretas.
+Não substitua o seu .env por um example.
+
+Passo 4:
+rode os comandos abaixo na raiz do projeto:
+
+docker compose down
+docker compose up -d --build
+
+Passo 5:
+abra:
+- frontend: http://localhost:5173
+- backend/API: http://localhost:8000
+
+Passo 6:
+se a tela continuar antiga, faça:
+- Ctrl + F5 no navegador
+- ou limpe cache do navegador
+- ou rode docker compose down e depois up -d --build novamente
+
+13. como saber se a atualização entrou
+
+Sinais visuais:
+- o nome GuMa aparece na barra superior
+- existe um carrossel novo na home
+- existe uma seção de livros mais recomendados
+- existe uma seção de segurança e criptografia
+
+14. observações finais
+
+- nunca publique o .env
+- nunca coloque senha do banco no frontend
+- nunca use service_role no frontend
+- use apenas a chave publicável onde for realmente necessário
+- se quiser trocar o vídeo do carrossel, altere a URL do iframe em frontend/src/pages/Home.jsx
+- se quiser trocar a imagem do carrossel, substitua o arquivo frontend/src/assets/featured-books-guma.png
+
+15. Como trocar o vídeo do YouTube com segurança
+
+Abra frontend/src/pages/Home.jsx e localize youtube-nocookie.com/embed/. Troque apenas o ID do vídeo por um de entrevista literária com incorporação permitida e verifique se ele funciona no navegador. O player está configurado para tentar começar sem som por causa das regras dos navegadores. Caso o vídeo não carregue, use o link externo do YouTube. O carousel não avança automaticamente durante a reprodução.
+
+16. O que criptografia significa neste projeto
+
+O arquivo .env não criptografa dados: ele só guarda configurações e segredos fora do código enviado para o navegador. Para criptografia de sessão, o Laravel usa sua APP_KEY e a biblioteca de criptografia do framework. Para hashes de senha, o Supabase Auth faz a gestão. Salt é parte do mecanismo de senhas; não é necessário criar um SALT no .env. Pepper só faz sentido se código do servidor o utilizar explicitamente.
