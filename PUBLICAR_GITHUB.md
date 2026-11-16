@@ -4,15 +4,15 @@ O pacote deste projeto contém código-fonte e exemplos de configuração, **nã
 
 ## Pelo GitHub Web + Git no Windows
 
-1. Acesse https://github.com/new e crie um repositório chamado `biblioteca-folha`, marcando **Public**. Não inicialize com README, pois o projeto já inclui um.
+1. Acesse https://github.com/new e crie um repositório chamado `Biblioteca_GuMa`, marcando **Public**. Não inicialize com README, pois o projeto já inclui um.
 2. Extraia o ZIP, abra o terminal PowerShell na pasta `biblioteca-segura` e execute:
 
 ```powershell
 git init -b main
 git add .
 git status
-git commit -m "feat: biblioteca Folha com Google Books, Laravel e Supabase"
-git remote add origin https://github.com/SEU_USUARIO/biblioteca-folha.git
+git commit -m "feat: biblioteca GuMa com Google Books, Laravel e Supabase"
+git remote add origin https://github.com/SEU_USUARIO/Biblioteca_GuMa.git
 git push -u origin main
 ```
 
