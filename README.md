@@ -1,4 +1,4 @@
-# 📚 GuMa: Sistema de Biblioteca
+# 📚 GuMa: Sistema de Biblioteka
 
 > Plataforma de biblioteca com catálogo local, busca bibliográfica Google Books, conta de leitores, empréstimos controlados, painel de bibliotecários e API Laravel. Interface em português, código-fonte voltado à aprendizagem e implantação controlada.
 
