@@ -246,3 +246,29 @@ Projeto educacional de biblioteca desenvolvido com React, Laravel, PHP, Docker e
 - https://docs.docker.com/compose/
 
 **Licença:** nenhuma licença de código aberto foi escolhida nesta versão. Defina e inclua um arquivo `LICENSE` antes de estabelecer permissões de reutilização.
+
+
+## Atualização da interface GuMa
+
+A página inicial da GuMa reúne busca no acervo, vitrine de destaques, carrossel com uma ilustração editorial original dos livros e uma entrevista literária incorporada do YouTube. Durante o vídeo, o carrossel não muda de slide automaticamente; o visitante pode usar os controles de pausa e navegação.
+
+Há duas fontes de recomendações distintas:
+
+- **Sugestões editoriais**: títulos clássicos ilustrativos selecionados para inspirar a leitura. Eles não representam um ranking estatístico de usuários nem garantem disponibilidade física.
+- **Destaques do acervo**: livros cadastrados e marcados pela equipe administrativa, com disponibilidade obtida no banco.
+
+A rota `/seguranca` explica o que fazem hash, salt, pepper, sessão de servidor e permissões. O **Supabase Auth** continua responsável pelo armazenamento dos verificadores de senha. A variável `PASSWORD_PEPPER` em `backend/.env.example` é apenas opcional e **não implementa nem modifica o hash das senhas do Supabase**. Já a `APP_KEY` do Laravel serve à criptografia da sessão, não à geração dos hashes de senha.
+
+O vídeo é um conteúdo de terceiros e seu carregamento depende das regras de incorporação, disponibilidade regional e reprodução automática do YouTube. O player também oferece um link externo.
+
+### Atualizar uma instalação antiga no Windows sem instalar Git
+
+1. Baixe `Code > Download ZIP` no repositório e extraia a nova versão em outra pasta.
+2. Faça uma cópia de `backend/.env` da pasta antiga e coloque-a na nova pasta `backend`. Nunca publique o `.env`.
+3. Na pasta antiga, execute `docker compose down`.
+4. Na nova pasta, execute `docker compose up -d --build`.
+5. Visite `http://localhost:5173` e atualize com `Ctrl + F5`.
+
+**Não execute novamente os SQLs iniciais** no Supabase já configurado. O novo visual não requer alterar tabelas, permissões ou credenciais.
+
+Para detalhes da arquitetura e das variáveis de ambiente, consulte [GUIA_TECNOLOGIAS_E_ENV.txt](./GUIA_TECNOLOGIAS_E_ENV.txt).
