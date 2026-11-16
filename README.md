@@ -1,4 +1,4 @@
-# 📚 Folha — Sistema de Biblioteca
+# 📚 GuMa: Sistema de Biblioteca
 
 > Plataforma de biblioteca com catálogo local, busca bibliográfica Google Books, conta de leitores, empréstimos controlados, painel de bibliotecários e API Laravel. Interface em português, código-fonte voltado à aprendizagem e implantação controlada.
 
@@ -24,7 +24,7 @@
 
 ## O projeto
 
-O **Folha** ajuda uma biblioteca física a organizar o acervo e tornar a consulta mais acessível. Qualquer visitante pode visualizar livros disponíveis. Após fazer login, um leitor pode solicitar a retirada; um bibliotecário precisa aprovar e registrar a entrega física. A devolução é igualmente registrada pela equipe. Isso impede que o aplicativo confunda a consulta na internet com um empréstimo efetivo.
+O **GuMa** ajuda uma biblioteca física a organizar o acervo e tornar a consulta mais acessível. Qualquer visitante pode visualizar livros disponíveis. Após fazer login, um leitor pode solicitar a retirada; um bibliotecário precisa aprovar e registrar a entrega física. A devolução é igualmente registrada pela equipe. Isso impede que o aplicativo confunda a consulta na internet com um empréstimo efetivo.
 
 ### O que já existe
 
