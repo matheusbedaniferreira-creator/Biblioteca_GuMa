@@ -1,6 +1,6 @@
 <?php
 return [
-    'name' => env('APP_NAME', 'Biblioteca Digital'),
+    'name' => env('APP_NAME', 'GuMa | Biblioteca Digital'),
     'env' => env('APP_ENV', 'production'),
     'debug' => (bool) env('APP_DEBUG', false),
     'url' => env('APP_URL', 'http://localhost:8000'),
