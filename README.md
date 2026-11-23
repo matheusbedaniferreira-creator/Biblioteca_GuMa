@@ -258,7 +258,7 @@ Há duas fontes de recomendações distintas:
 - **Sugestões editoriais**: títulos clássicos ilustrativos selecionados para inspirar a leitura. Eles não representam um ranking estatístico de usuários nem garantem disponibilidade física.
 - **Destaques do acervo**: livros cadastrados e marcados pela equipe administrativa, com disponibilidade obtida no banco.
 
-A rota `/seguranca` explica o que fazem hash, salt, pepper, sessão de servidor e permissões. O **Supabase Auth** continua responsável pelo armazenamento dos verificadores de senha. A variável `PASSWORD_PEPPER` em `backend/.env.example` é apenas opcional e **não implementa nem modifica o hash das senhas do Supabase**. Já a `APP_KEY` do Laravel serve à criptografia da sessão, não à geração dos hashes de senha.
+A rota `/seguranca` explica como funcionam hash, salt, sessão de servidor e permissões. O **Supabase Auth** é responsável pelo armazenamento e verificação das senhas, enquanto a `APP_KEY` do Laravel serve à criptografia da sessão.
 
 O vídeo é um conteúdo de terceiros e seu carregamento depende das regras de incorporação, disponibilidade regional e reprodução automática do YouTube. O player também oferece um link externo.
 

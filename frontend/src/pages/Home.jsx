@@ -59,8 +59,8 @@ const securityTopics = [
   },
   {
     icon: LockKeyhole,
-    title: 'Pepper opcional',
-    description: 'O login atual usa Supabase Auth, sem pepper próprio. Para rotinas que o utilizem, o segredo deve permanecer somente no backend.',
+    title: 'Segredos no servidor',
+    description: 'Chaves de API, credenciais do banco e a APP_KEY ficam isoladas no backend, sem exposição para o navegador.',
   },
 ];
 
@@ -104,7 +104,7 @@ export default function Home() {
       type: 'text',
       eyebrow: 'SEGURANÇA DIGITAL',
       title: 'Proteção por camadas, não só aparência',
-      description: 'Entenda a diferença entre hash, salt, pepper opcional e proteção de segredos; a autenticação real é gerenciada pelo Supabase Auth.',
+      description: 'Entenda como funcionam hash, salt, sessões no servidor e proteção de credenciais com autenticação gerenciada pelo Supabase Auth.',
       actionLabel: 'Ver detalhes de segurança',
       actionTo: '/seguranca',
     },
@@ -202,7 +202,7 @@ export default function Home() {
 
       <section className="security-section"><div className="section-heading"><div><span className="eyebrow accent">SEGURANÇA E CRIPTOGRAFIA</span><h2>Proteção pensada <em>desde a base</em></h2><p>Na GuMa, a parte visual conversa com uma arquitetura segura: segredo no .env, autenticação centralizada e separação clara entre frontend e backend.</p></div></div>
         <div className="security-grid">{securityTopics.map(({ icon: Icon, title, description }) => <article className="security-card" key={title}><div className="security-icon"><Icon size={22}/></div><h3>{title}</h3><p>{description}</p></article>)}</div>
-        <div className="security-note"><strong>Observação técnica:</strong> o arquivo <code>.env</code> fica no backend e armazena segredos como URL do Supabase, chaves publicáveis, configurações de banco e segredos de sessão e chaves de serviços. O pepper opcional não está ativado no Supabase Auth. A configuração deve permanecer no servidor.</div>
+        <div className="security-note"><strong>Observação técnica:</strong> o arquivo <code>.env</code> fica no backend e armazena a URL do Supabase, configurações de banco, segredos de sessão e chaves de serviços, mantendo tudo restrito ao servidor.</div>
         <Link className="text-link" to="/seguranca" style={{marginTop:20}}>Conhecer nossa arquitetura de segurança <ArrowUpRight size={18}/></Link>
       </section>
     </div>

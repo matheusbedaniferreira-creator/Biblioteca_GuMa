@@ -17,12 +17,8 @@ O arquivo .env é o local onde ficam variáveis de ambiente privadas ou sensíve
 - URL do frontend
 - chave do Google Books, se quiser usar no backend
 - valores de sessão e cookies
-- um pepper, se você quiser usar em rotinas internas no servidor
 
-Exemplo ilustrativo de variável (NÃO É UMA FUNÇÃO ATIVA DO LOGIN):
-PASSWORD_PEPPER=exemplo_de_valor_local_sem_ser_uma_chave_real
-
-O frontend não deve conhecer esse valor. Se um segredo aparece em arquivo VITE_ ou dentro do React, ele deixa de ser segredo.
+O frontend não deve conhecer esses valores. Se um segredo aparece em arquivo VITE_ ou dentro do React, ele deixa de ser segredo.
 
 3. env.example x .env
 
@@ -110,7 +106,7 @@ No projeto da GuMa, o Supabase guarda entidades como:
 - solicitações
 - empréstimos
 
-9. segurança: hash, salt e pepper
+9. segurança: hash e salt
 
 Hash:
 - transforma a senha em uma representação irreversível
@@ -121,12 +117,7 @@ Salt:
 - evita que senhas iguais gerem exatamente o mesmo hash
 - dificulta rainbow tables
 
-Pepper:
-- segredo adicional do servidor
-- deve ficar apenas no backend ou no .env
-- nunca deve ser enviado ao navegador
-
-No caso do Supabase Auth, o armazenamento seguro e a verificação da senha são feitos pelo próprio provedor de autenticação. Por isso, o PASSWORD_PEPPER neste projeto é APENAS um placeholder opcional, sem ligação com o login atual. Não basta adicionar uma variável no .env para que ela passe a proteger senhas. Você não deve salvar senha manualmente em tabela própria.
+No caso do Supabase Auth, o armazenamento seguro e a verificação da senha são feitos pelo próprio provedor de autenticação. Você não deve salvar senha manualmente em tabela própria.
 
 10. Google Books API
 
@@ -202,4 +193,4 @@ Abra frontend/src/pages/Home.jsx e localize youtube-nocookie.com/embed/. Troque 
 
 16. O que criptografia significa neste projeto
 
-O arquivo .env não criptografa dados: ele só guarda configurações e segredos fora do código enviado para o navegador. Para criptografia de sessão, o Laravel usa sua APP_KEY e a biblioteca de criptografia do framework. Para hashes de senha, o Supabase Auth faz a gestão. Salt é parte do mecanismo de senhas; não é necessário criar um SALT no .env. Pepper só faz sentido se código do servidor o utilizar explicitamente.
+O arquivo .env não criptografa dados: ele só guarda configurações e segredos fora do código enviado para o navegador. Para criptografia de sessão, o Laravel usa sua APP_KEY e a biblioteca de criptografia do framework. Para hashes de senha, o Supabase Auth faz a gestão. Salt é parte do mecanismo de senhas; não é necessário criar um SALT no .env.

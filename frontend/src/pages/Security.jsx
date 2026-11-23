@@ -3,7 +3,7 @@ import { ArrowLeft, KeyRound, LockKeyhole, ShieldCheck, Server, Database, Finger
 
 const safeguards = [
   { icon: Fingerprint, heading: 'Hash e salt', text: 'O Supabase Auth é responsável por armazenar verificadores seguros de senha. Um hash não é uma criptografia reversível; o salt exclusivo reduz riscos de tabelas pré-computadas.' },
-  { icon: KeyRound, heading: 'Pepper opcional', text: 'Um pepper é um segredo compartilhado que só faz sentido se utilizado em uma rotina criptográfica específica. No login atual da GuMa, não implementamos pepper próprio: o Supabase Auth gerencia a verificação de senhas.' },
+  { icon: KeyRound, heading: 'Autenticação gerenciada', text: 'O Supabase Auth cuida do cadastro, login e verificação de senhas e tokens OAuth, evitando que a aplicação armazene senhas diretamente.' },
   { icon: LockKeyhole, heading: 'Variáveis de ambiente', text: 'O arquivo backend/.env guarda credenciais de banco, chaves de serviços e a APP_KEY, usada pelo Laravel para criptografar a sessão. O arquivo real jamais deve ser publicado.' },
   { icon: Server, heading: 'Sessões no servidor', text: 'O Laravel guarda os tokens de autenticação na sessão criptografada no servidor. O navegador recebe apenas um cookie com HttpOnly, sem tokens em localStorage ou sessionStorage.' },
   { icon: Database, heading: 'Permissões e banco', text: 'As operações passam pela API Laravel, que valida a sessão e separa permissões de clientes e bibliotecários. No PostgreSQL há restrições de integridade e RLS habilitado.' },
