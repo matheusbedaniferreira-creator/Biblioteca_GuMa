@@ -21,6 +21,10 @@ class SessionController
     {
         return (string) config('services.supabase.publishable_key');
     }
+    private function secretKey(): string
+    {
+        return (string) config('services.supabase.secret_key');
+    }
     private function ready(): bool
     {
         return filter_var($this->endpoint(), FILTER_VALIDATE_URL)
@@ -96,8 +100,23 @@ class SessionController
                 ]);
             $body = $result->json() ?: [];
             if (!$result->successful()) {
-                Log::warning('Falha ao registrar nova conta', ['email' => $values['email'], 'ip' => $request->ip()]);
-                return response()->json(['message' => 'Nao foi possivel criar a conta. Confira o e-mail e os requisitos da senha.'], 422);
+                $errorCode = $body['error_code'] ?? $body['code'] ?? '';
+                if (($result->status() === 429 || $errorCode === 'over_email_send_rate_limit') && $this->secretKey() !== '') {
+                    return $this->registerViaAdmin($request, $values);
+                }
+                Log::warning('Falha ao registrar nova conta', [
+                    'email' => $values['email'],
+                    'ip' => $request->ip(),
+                    'status' => $result->status(),
+                    'error_code' => $errorCode,
+                ]);
+                $msg = match ($errorCode) {
+                    'user_already_exists', 'email_exists' => 'Este e-mail ja esta cadastrado.',
+                    'weak_password' => 'A senha nao atende aos requisitos minimos de seguranca.',
+                    'over_email_send_rate_limit' => 'Limite de envio de e-mails atingido. Aguarde alguns minutos.',
+                    default => 'Nao foi possivel criar a conta. Confira o e-mail e os requisitos da senha.',
+                };
+                return response()->json(['message' => $msg], 422);
             }
             Log::info('Cadastro de usuario realizado', ['email' => $values['email'], 'ip' => $request->ip()]);
             // Se Supabase nao exigir confirmacao, ha sessao retornada.
@@ -110,6 +129,48 @@ class SessionController
             Log::error('Erro de conexao com Supabase Auth no cadastro', ['ip' => $request->ip()]);
             return response()->json(['message' => 'Supabase Auth indisponivel.'], 503);
         }
+    }
+
+    private function registerViaAdmin(Request $request, array $values)
+    {
+        $peppered = $this->applyPepper($values['password']);
+        $create = Http::timeout(12)
+            ->withHeaders([
+                'apikey' => $this->secretKey(),
+                'Authorization' => 'Bearer '.$this->secretKey(),
+            ])
+            ->acceptJson()
+            ->post($this->endpoint().'/auth/v1/admin/users', [
+                'email' => $values['email'],
+                'password' => $peppered,
+                'email_confirm' => true,
+                'user_metadata' => ['nome' => $values['nome']],
+            ]);
+        $body = $create->json() ?: [];
+        if (!$create->successful()) {
+            $errorCode = $body['error_code'] ?? $body['code'] ?? '';
+            Log::warning('Falha ao registrar conta via admin', [
+                'email' => $values['email'],
+                'ip' => $request->ip(),
+                'status' => $create->status(),
+                'error_code' => $errorCode,
+            ]);
+            $msg = in_array($errorCode, ['user_already_exists', 'email_exists'], true)
+                ? 'Este e-mail ja esta cadastrado.'
+                : 'Nao foi possivel criar a conta. Confira o e-mail e os requisitos da senha.';
+            return response()->json(['message' => $msg], 422);
+        }
+        Log::info('Cadastro de usuario realizado (sem envio de e-mail)', ['email' => $values['email'], 'ip' => $request->ip()]);
+        $login = $this->authClient()->post($this->endpoint().'/auth/v1/token?grant_type=password', [
+            'email' => $values['email'],
+            'password' => $peppered,
+        ]);
+        $session = $login->json() ?: [];
+        if ($login->successful() && !empty($session['access_token']) && !empty($session['refresh_token'])) {
+            $this->persist($request, $session);
+            return response()->json(['logged_in' => true, 'message' => 'Conta criada.'], 201);
+        }
+        return response()->json(['logged_in' => false, 'message' => 'Conta criada. Faca login para continuar.'], 201);
     }
 
     public function me(Request $request)

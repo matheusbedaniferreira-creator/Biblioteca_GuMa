@@ -11,8 +11,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['web', 'no.cache'])->group(function () {
     Route::get('/health', fn () => response()->json(['ok' => true, 'service' => 'biblioteca-api', 'auth' => 'server-session']));
     Route::get('/auth/csrf', [SessionController::class, 'csrf']);
-    Route::post('/auth/login', [SessionController::class, 'login'])->middleware('throttle:6,1');
-    Route::post('/auth/register', [SessionController::class, 'register'])->middleware('throttle:4,1');
+    Route::post('/auth/login', [SessionController::class, 'login'])->middleware('throttle:30,1');
+    Route::post('/auth/register', [SessionController::class, 'register'])->middleware('throttle:30,1');
     Route::post('/auth/logout', [SessionController::class, 'logout']);
     Route::get('/auth/google', [SessionController::class, 'google'])->middleware('throttle:10,1');
     Route::get('/auth/google/callback', [SessionController::class, 'googleCallback'])->middleware('throttle:10,1');
