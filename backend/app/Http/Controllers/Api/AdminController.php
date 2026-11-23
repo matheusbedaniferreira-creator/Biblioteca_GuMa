@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 use App\Support\Catalog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class AdminController
@@ -30,6 +31,7 @@ class AdminController
     {
         $data = $request->validate(['nome' => 'required|string|max:100', 'nacionalidade' => 'nullable|string|max:50']);
         $id = DB::table('autores')->insertGetId($data, 'id_autor');
+        Log::info('Autor cadastrado', ['autor_id' => $id, 'bibliotecario_id' => $request->attributes->get('bibliotecario')?->id_bibliotecario]);
         return response()->json(DB::table('autores')->where('id_autor', $id)->first(), 201);
     }
 
@@ -47,6 +49,7 @@ class AdminController
             'horario_fechamento' => 'required|date_format:H:i',
         ]);
         $id = DB::table('bibliotecas')->insertGetId($data, 'id_biblioteca');
+        Log::info('Biblioteca cadastrada', ['biblioteca_id' => $id, 'bibliotecario_id' => $request->attributes->get('bibliotecario')?->id_bibliotecario]);
         return response()->json(DB::table('bibliotecas')->where('id_biblioteca', $id)->first(), 201);
     }
 
@@ -91,6 +94,7 @@ class AdminController
         $data['destaque'] = $data['destaque'] ?? false;
         // O trigger SQL define quantidade_disponivel a partir de quantidade_total.
         $id = DB::table('livros')->insertGetId($data, 'id_livro');
+        Log::info('Livro cadastrado no catalogo', ['livro_id' => $id, 'bibliotecario_id' => $request->attributes->get('bibliotecario')?->id_bibliotecario]);
         return response()->json(Catalog::query()->where('l.id_livro', $id)->first(), 201);
     }
 
@@ -107,7 +111,10 @@ class AdminController
                         "Há $emprestados exemplares emprestados. O total não pode ser menor que isso."]);
                 }
             }
-            if ($data) DB::table('livros')->where('id_livro', $id)->update($data);
+            if ($data) {
+                DB::table('livros')->where('id_livro', $id)->update($data);
+                Log::info('Livro atualizado', ['livro_id' => $id, 'bibliotecario_id' => request()->attributes->get('bibliotecario')?->id_bibliotecario]);
+            }
             return response()->json(Catalog::query()->where('l.id_livro', $id)->first());
         });
     }
@@ -138,6 +145,9 @@ class AdminController
     {
         $updated = DB::table('solicitacoes')->where('id_solicitacao', $id)
             ->where('status', 'PENDENTE')->update(['status' => 'RECUSADA']);
+        if ($updated) {
+            Log::info('Solicitacao recusada', ['solicitacao_id' => $id, 'bibliotecario_id' => request()->attributes->get('bibliotecario')?->id_bibliotecario]);
+        }
         return $updated ? response()->json(['message' => 'Solicitação recusada.'])
             : response()->json(['message' => 'Solicitação já processada ou inexistente.'], 409);
     }
@@ -154,6 +164,11 @@ class AdminController
             $idEmprestimo = $this->insertLoan($request, (int) $sol->id_cliente,
                 (int) $sol->id_livro, $data['data_prevista_devolucao']);
             DB::table('solicitacoes')->where('id_solicitacao', $id)->update(['status' => 'APROVADA']);
+            Log::info('Solicitacao aprovada e emprestimo gerado', [
+                'solicitacao_id' => $id,
+                'emprestimo_id' => $idEmprestimo,
+                'bibliotecario_id' => $request->attributes->get('bibliotecario')?->id_bibliotecario,
+            ]);
             return response()->json(['message' => 'Retirada confirmada e empréstimo registrado.',
                 'id_emprestimo' => $idEmprestimo], 201);
         });
@@ -185,7 +200,7 @@ class AdminController
         ]);
         $staff = $request->attributes->get('bibliotecario');
         // Trigger de emprestimo registra o estoque no proprio banco.
-        return DB::table('emprestimos')->insertGetId([
+        $loanId = DB::table('emprestimos')->insertGetId([
             'id_cliente' => $clienteId,
             'id_livro' => $livroId,
             'id_bibliotecario_entrega' => $staff->id_bibliotecario,
@@ -193,6 +208,13 @@ class AdminController
             'data_retirada' => now('UTC'),
             'status' => 'EMPRESTADO',
         ], 'id_emprestimo');
+        Log::info('Emprestimo registrado', [
+            'emprestimo_id' => $loanId,
+            'cliente_id' => $clienteId,
+            'livro_id' => $livroId,
+            'bibliotecario_id' => $staff->id_bibliotecario,
+        ]);
+        return $loanId;
     }
 
     public function loans()
@@ -218,6 +240,7 @@ class AdminController
             $staff = request()->attributes->get('bibliotecario');
             DB::selectOne("SELECT set_config('request.jwt.claim.sub', ?, true)", [$staff->auth_user_id]);
             DB::table('emprestimos')->where('id_emprestimo', $id)->update(['status' => 'DEVOLVIDO']);
+            Log::info('Devolucao de emprestimo registrada', ['emprestimo_id' => $id, 'bibliotecario_id' => $staff->id_bibliotecario]);
             return response()->json(['message' => 'Devolução registrada. Estoque atualizado.']);
         });
     }

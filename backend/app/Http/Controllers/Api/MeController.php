@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class MeController
@@ -25,6 +26,7 @@ class MeController
             'telefone' => 'nullable|string|max:20',
         ]);
         DB::table('clientes')->where('id_cliente', $cliente->id_cliente)->update($data);
+        Log::info('Perfil de cliente atualizado', ['cliente_id' => $cliente->id_cliente]);
         return response()->json(DB::table('clientes')->where('id_cliente', $cliente->id_cliente)->first());
     }
 
@@ -74,6 +76,11 @@ class MeController
                 'id_cliente' => $cliente->id_cliente, 'id_livro' => $id,
                 'status' => 'PENDENTE', 'data_solicitacao' => now(),
             ], 'id_solicitacao');
+            Log::info('Solicitacao de emprestimo criada', [
+                'solicitacao_id' => $solicitacaoId,
+                'cliente_id' => $cliente->id_cliente,
+                'livro_id' => $id,
+            ]);
             return response()->json(['message' => 'Solicitação enviada. Aguarde a confirmação da biblioteca.',
                 'id_solicitacao' => $solicitacaoId], 201);
         });
@@ -86,6 +93,9 @@ class MeController
         $updated = DB::table('solicitacoes')->where('id_solicitacao', $id)
             ->where('id_cliente', $cliente->id_cliente)->where('status', 'PENDENTE')
             ->update(['status' => 'CANCELADA']);
+        if ($updated) {
+            Log::info('Solicitacao cancelada pelo cliente', ['solicitacao_id' => $id, 'cliente_id' => $cliente->id_cliente]);
+        }
         return $updated ? response()->json(['message' => 'Solicitação cancelada.'])
             : response()->json(['message' => 'Solicitação não encontrada ou já processada.'], 409);
     }

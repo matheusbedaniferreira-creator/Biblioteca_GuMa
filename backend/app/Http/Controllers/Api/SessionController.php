@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Client\ConnectionException;
 
 /**
@@ -30,6 +31,14 @@ class SessionController
     {
         return Http::timeout(12)->withHeaders(['apikey' => $this->key()])->acceptJson();
     }
+    private function applyPepper(string $password): string
+    {
+        $pepper = (string) config('services.auth.pepper', '');
+        if ($pepper === '') {
+            return $password;
+        }
+        return hash_hmac('sha256', $password, $pepper);
+    }
     private function persist(Request $request, array $data): void
     {
         $request->session()->regenerate(); // defesa contra session fixation
@@ -51,14 +60,20 @@ class SessionController
         ]);
         if (!$this->ready()) return response()->json(['message' => 'Configure SUPABASE_URL e SUPABASE_PUBLISHABLE_KEY no backend/.env'], 503);
         try {
-            $result = $this->authClient()->post($this->endpoint().'/auth/v1/token?grant_type=password', $values);
+            $result = $this->authClient()->post($this->endpoint().'/auth/v1/token?grant_type=password', [
+                'email' => $values['email'],
+                'password' => $this->applyPepper($values['password']),
+            ]);
             $body = $result->json() ?: [];
             if (!$result->successful() || empty($body['access_token']) || empty($body['refresh_token'])) {
+                Log::warning('Falha de autenticacao por e-mail', ['email' => $values['email'], 'ip' => $request->ip()]);
                 return response()->json(['message' => 'E-mail ou senha incorretos, ou e-mail ainda nao confirmado.'], 401);
             }
             $this->persist($request, $body);
+            Log::info('Login realizado por e-mail', ['email' => $values['email'], 'ip' => $request->ip()]);
             return response()->json(['message' => 'Login realizado.']);
         } catch (ConnectionException $e) {
+            Log::error('Erro de conexao com Supabase Auth no login', ['ip' => $request->ip()]);
             return response()->json(['message' => 'Supabase Auth indisponivel.'], 503);
         }
     }
@@ -76,13 +91,15 @@ class SessionController
             $result = $this->authClient()
                 ->post($this->endpoint().'/auth/v1/signup?'.http_build_query(['redirect_to' => $front.'/login']), [
                     'email' => $values['email'],
-                    'password' => $values['password'],
+                    'password' => $this->applyPepper($values['password']),
                     'data' => ['nome' => $values['nome']],
                 ]);
             $body = $result->json() ?: [];
             if (!$result->successful()) {
+                Log::warning('Falha ao registrar nova conta', ['email' => $values['email'], 'ip' => $request->ip()]);
                 return response()->json(['message' => 'Nao foi possivel criar a conta. Confira o e-mail e os requisitos da senha.'], 422);
             }
+            Log::info('Cadastro de usuario realizado', ['email' => $values['email'], 'ip' => $request->ip()]);
             // Se Supabase nao exigir confirmacao, ha sessao retornada.
             if (!empty($body['access_token']) && !empty($body['refresh_token'])) {
                 $this->persist($request, $body);
@@ -90,6 +107,7 @@ class SessionController
             }
             return response()->json(['logged_in' => false, 'message' => 'Se o e-mail for valido, voce recebera uma mensagem de confirmacao.'], 201);
         } catch (ConnectionException $e) {
+            Log::error('Erro de conexao com Supabase Auth no cadastro', ['ip' => $request->ip()]);
             return response()->json(['message' => 'Supabase Auth indisponivel.'], 503);
         }
     }
@@ -121,6 +139,7 @@ class SessionController
         }
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+        Log::info('Sessao encerrada (logout)', ['ip' => $request->ip()]);
         return response()->json(['message' => 'Sessao encerrada.']);
     }
 
@@ -161,6 +180,7 @@ class SessionController
                 return redirect()->away($front.'/login?erro=oauth');
             }
             $this->persist($request, $body);
+            Log::info('Login realizado via Google OAuth', ['ip' => $request->ip()]);
             return redirect()->away($front.'/minha-conta');
         } catch (ConnectionException $e) {
             return redirect()->away($front.'/login?erro=rede');
