@@ -6,7 +6,7 @@ import {
   BookOpenText,
   Clock,
   Search,
-  ShieldCheck,
+  Settings,
 } from 'lucide-react';
 import { api } from '../lib/api';
 import BookCard from '../components/BookCard';
@@ -67,17 +67,19 @@ export default function Home() {
         </form>
       </div>
       <div className="hero-shelf" aria-label="Livros em destaque">
-        {heroBooks.map(book => (
+        {heroBooks.map((book, idx) => (
           <Link key={book.title} to={`/catalogo?q=${encodeURIComponent(book.title)}`} className={`shelf-book shelf-${book.tone}`}>
-            <span className="shelf-author">{book.author}</span>
-            <strong className="shelf-title">{book.title}</strong>
-            <span className="shelf-spine-mark">GuMa</span>
+            <div className="shelf-cover-inner">
+              <span className="shelf-author">{book.author}</span>
+              <strong className="shelf-title">{book.title}</strong>
+              <span className="shelf-spine-mark">Edição {idx === 0 ? 'Clássica' : idx === 1 ? 'Ilustrada' : 'Especial'}</span>
+            </div>
           </Link>
         ))}
       </div>
     </div></section>
 
-    <section className="benefits"><div className="container benefit-grid"><div><BookOpenText size={22}/><span><strong>Acervo completo</strong><small>Busque títulos locais e no Google Books</small></span></div><div><Clock size={22}/><span><strong>Retirada rápida</strong><small>Solicite pelo site e retire na biblioteca</small></span></div><div><ShieldCheck size={22}/><span><strong>Conta protegida</strong><small>Sessão no servidor e acesso por perfil</small></span></div></div></section>
+    <section className="benefits"><div className="container benefit-grid"><div><BookOpenText size={22}/><span><strong>Acervo completo</strong><small>Busque títulos locais e no Google Books</small></span></div><div><Clock size={22}/><span><strong>Retirada rápida</strong><small>Solicite pelo site e retire na biblioteca</small></span></div><div className="pink-gears-slot" aria-label="Engrenagens em movimento"><div className="pink-gears"><Settings size={26} className="gear-one"/><Settings size={20} className="gear-two"/><Settings size={16} className="gear-three"/></div></div></div></section>
 
     <div className="container collections">
       {!loading && collections.destaques.length > 0 && (
