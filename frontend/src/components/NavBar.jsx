@@ -13,9 +13,9 @@ export default function NavBar() {
       <Link to="/" className="brand"><span className="brand-icon"><BookOpenText size={25}/></span><span>GuMa</span></Link>
       <button className="mobile-menu icon-button" aria-label="Abrir menu" onClick={() => setOpen(!open)}><Menu size={22}/></button>
       <nav className={`main-nav ${open ? 'open' : ''}`}>
-        {nav('/', 'Início')}{nav('/catalogo', 'Explorar livros')}{nav('/seguranca','Segurança')}
+        {nav('/', 'Início')}{nav('/catalogo', 'Catálogo')}{nav('/descobrir', 'Google Books')}
         {user && nav('/minha-conta', 'Minha estante')}
-        {profile?.role === 'bibliotecario' && nav('/admin', 'Painel da biblioteca')}
+        {profile?.role === 'bibliotecario' && nav('/admin', 'Painel')}
       </nav>
       <div className="nav-actions">
         {user ? <>
