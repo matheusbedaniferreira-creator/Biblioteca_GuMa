@@ -1,212 +1,252 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 820" width="1160" height="820" font-family="Segoe UI, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 780" width="1280" height="780" font-family="Segoe UI, Inter, Arial, sans-serif">
   <defs>
-    <!-- Solid arrow for Sequence Flow -->
-    <marker id="seqArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#1e2421"/>
+    <marker id="seq" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 10 5 L 0 8.8 z" fill="#2b3a34"/>
     </marker>
-    <!-- Open hollow arrow for Message Flow -->
-    <marker id="msgArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#ffffff" stroke="#1e2421" stroke-width="1.3"/>
+    <marker id="msgEnd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#ffffff" stroke="#475569" stroke-width="1.4"/>
     </marker>
-    <!-- Open circle start for Message Flow -->
     <marker id="msgStart" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7">
-      <circle cx="5" cy="5" r="3.5" fill="#ffffff" stroke="#1e2421" stroke-width="1.4"/>
+      <circle cx="5" cy="5" r="3.4" fill="#ffffff" stroke="#475569" stroke-width="1.4"/>
     </marker>
-    <!-- Open V arrow for Data Association -->
-    <marker id="dataArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M 1 1.5 L 9 5 L 1 8.5" fill="none" stroke="#1e2421" stroke-width="1.5"/>
+    <marker id="dataV" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5" fill="none" stroke="#475569" stroke-width="1.5"/>
     </marker>
+    <filter id="cardShadow" x="-6%" y="-6%" width="112%" height="118%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.2" flood-color="#0f2922" flood-opacity="0.08"/>
+    </filter>
+    <!-- BPMN User Task Icon -->
+    <g id="icoUser">
+      <circle cx="7" cy="4.2" r="2.8" fill="none" stroke="#163f35" stroke-width="1.3"/>
+      <path d="M 2 12.2 C 2 9.2 4.2 7.8 7 7.8 C 9.8 7.8 12 9.2 12 12.2" fill="none" stroke="#163f35" stroke-width="1.3" stroke-linecap="round"/>
+    </g>
+    <!-- BPMN Service Task (Gear) Icon -->
+    <g id="icoService">
+      <circle cx="7" cy="7" r="2.6" fill="none" stroke="#1d4ed8" stroke-width="1.3"/>
+      <path d="M7 1.5 V3.2 M7 10.8 V12.5 M1.5 7 H3.2 M10.8 7 H12.5 M3.1 3.1 L4.3 4.3 M9.7 9.7 L10.9 10.9 M10.9 3.1 L9.7 4.3 M4.3 9.7 L3.1 10.9" stroke="#1d4ed8" stroke-width="1.3" stroke-linecap="round"/>
+    </g>
   </defs>
 
-  <!-- Clean white background -->
-  <rect width="1160" height="820" fill="#ffffff"/>
+  <!-- Canvas Background -->
+  <rect width="1280" height="780" fill="#f8faf9"/>
 
-  <!-- ================= POOLS & LANES ================= -->
-  <!-- Pool 1: Leitor (Cliente) -->
-  <rect x="20" y="20" width="1120" height="250" fill="#ffffff" stroke="#1e2421" stroke-width="1.6"/>
-  <line x1="66" y1="20" x2="66" y2="270" stroke="#1e2421" stroke-width="1.4"/>
-  <text x="43" y="145" text-anchor="middle" font-size="14" font-weight="600" fill="#1e2421" transform="rotate(-90 43 145)">Leitor (Cliente)</text>
+  <!-- Diagram Header -->
+  <text x="24" y="34" font-size="18" font-weight="700" fill="#163f35">BPMN 2.0 — Fluxo de Empréstimo, Acervo e Segurança (GuMa)</text>
+  <text x="24" y="52" font-size="11.5" fill="#5b6b64">Processo colaborativo ponta a ponta: Pool principal dividido em 3 raias (Swimlanes) + Pool externo de serviços</text>
 
-  <!-- Pool 2: Bibliotecario (Admin) -->
-  <rect x="20" y="270" width="1120" height="250" fill="#ffffff" stroke="#1e2421" stroke-width="1.6"/>
-  <line x1="66" y1="270" x2="66" y2="520" stroke="#1e2421" stroke-width="1.4"/>
-  <text x="43" y="395" text-anchor="middle" font-size="14" font-weight="600" fill="#1e2421" transform="rotate(-90 43 395)">Bibliotecário (Admin)</text>
+  <!-- ================= MAIN POOL: SISTEMA BIBLIOTECA GUMA ================= -->
+  <rect x="24" y="68" width="1232" height="584" rx="4" fill="#ffffff" stroke="#163f35" stroke-width="2"/>
+  <!-- Pool Vertical Title Bar -->
+  <rect x="24" y="68" width="36" height="584" fill="#163f35"/>
+  <text x="42" y="360" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff" letter-spacing="0.8" transform="rotate(-90 42 360)">SISTEMA BIBLIOTECA GUMA</text>
 
-  <!-- Pool 3: Sistema GuMa -->
-  <rect x="20" y="520" width="1120" height="280" fill="#ffffff" stroke="#1e2421" stroke-width="1.6"/>
-  <line x1="66" y1="520" x2="66" y2="800" stroke="#1e2421" stroke-width="1.4"/>
-  <text x="43" y="660" text-anchor="middle" font-size="14" font-weight="600" fill="#1e2421" transform="rotate(-90 43 660)">Sistema GuMa (Laravel + Supabase)</text>
+  <!-- Lane 1: Leitor (Cliente) -->
+  <rect x="60" y="68" width="1196" height="174" fill="#fbfdfb" stroke="#cbd5e1" stroke-width="1"/>
+  <rect x="60" y="68" width="34" height="174" fill="#e6f0ec" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="77" y="155" text-anchor="middle" font-size="12.5" font-weight="700" fill="#163f35" transform="rotate(-90 77 155)">Leitor (Cliente)</text>
 
-  <!-- ================= POOL 1: LEITOR (CLIENTE) ================= -->
-  <!-- Start Event -->
-  <circle cx="112" cy="135" r="18" fill="#b7dfb9" stroke="#2d6a33" stroke-width="2"/>
-  <text x="112" y="172" text-anchor="middle" font-size="12" fill="#1e2421">Início</text>
+  <!-- Lane 2: Bibliotecario (Admin) -->
+  <rect x="60" y="242" width="1196" height="196" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+  <rect x="60" y="242" width="34" height="196" fill="#f3eee3" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="77" y="340" text-anchor="middle" font-size="12.5" font-weight="700" fill="#7c5628" transform="rotate(-90 77 340)">Bibliotecário</text>
 
-  <!-- Task 1: Cadastro e Login -->
-  <rect x="170" y="99" width="138" height="72" rx="10" fill="#ffffff" stroke="#1e2421" stroke-width="1.8"/>
-  <text x="239" y="131" text-anchor="middle" font-size="12.5" fill="#1e2421">Cadastrar ou</text>
-  <text x="239" y="148" text-anchor="middle" font-size="12.5" fill="#1e2421">Fazer Login</text>
+  <!-- Lane 3: API Laravel (Backend & Seguranca) -->
+  <rect x="60" y="438" width="1196" height="214" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+  <rect x="60" y="438" width="34" height="214" fill="#e8eef7" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="77" y="545" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1e3a5f" transform="rotate(-90 77 545)">API Laravel (BFF)</text>
 
-  <!-- Task 2: Explorar catalogo -->
-  <rect x="348" y="99" width="162" height="72" rx="10" fill="#ffffff" stroke="#1e2421" stroke-width="1.8"/>
-  <text x="429" y="124" text-anchor="middle" font-size="12.5" fill="#1e2421">Explorar catálogo</text>
-  <text x="429" y="141" text-anchor="middle" font-size="12.5" fill="#1e2421">e buscar no</text>
-  <text x="429" y="158" text-anchor="middle" font-size="12.5" fill="#1e2421">Google Books</text>
+  <!-- ================= EXTERNAL BLACK-BOX POOL (BOTTOM) ================= -->
+  <rect x="24" y="682" width="1232" height="68" rx="4" fill="#f1f5f9" stroke="#475569" stroke-width="1.8"/>
+  <rect x="24" y="682" width="36" height="68" fill="#475569"/>
+  <text x="650" y="713" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1e293b">Serviços Externos: Supabase Auth (Hash + Salt / OAuth) &amp; Google Books API</text>
+  <text x="650" y="732" text-anchor="middle" font-size="11" fill="#64748b">Pool externo (caixa-preta) — acessado exclusivamente pelo servidor Laravel via HTTPS</text>
 
-  <!-- XOR Gateway 1 -->
-  <polygon points="570,111 594,135 570,159 546,135" fill="#ffffff" stroke="#1e2421" stroke-width="1.8"/>
-  <text x="570" y="142" text-anchor="middle" font-size="20" font-weight="700" fill="#1e2421">X</text>
+  <!-- ================= LANE 1 ELEMENTS (LEITOR) ================= -->
+  <!-- Single Process Start Event -->
+  <circle cx="132" cy="155" r="18" fill="#dcfce7" stroke="#15803d" stroke-width="2.2"/>
+  <text x="132" y="190" text-anchor="middle" font-size="11.5" font-weight="600" fill="#166534">Acesso ao site</text>
 
-  <!-- Upper Task: Minha estante -->
-  <rect x="642" y="45" width="170" height="66" rx="10" fill="#ffffff" stroke="#1e2421" stroke-width="1.8"/>
-  <text x="727" y="74" text-anchor="middle" font-size="12.5" fill="#1e2421">Consultar estante ou</text>
-  <text x="727" y="91" text-anchor="middle" font-size="12.5" fill="#1e2421">cancelar solicitação</text>
-
-  <!-- Lower Task: Solicitar emprestimo -->
-  <rect x="642" y="160" width="170" height="66" rx="10" fill="#ffffff" stroke="#1e2421" stroke-width="1.8"/>
-  <text x="727" y="189" text-anchor="middle" font-size="12.5" fill="#1e2421">Solicitar empréstimo</text>
-  <text x="727" y="206" text-anchor="middle" font-size="12.5" fill="#1e2421">de livro</text>
-
-  <!-- XOR Gateway 2 (Merge) -->
-  <polygon points="872,111 896,135 872,159 848,135" fill="#ffffff" stroke="#1e2421" stroke-width="1.8"/>
-  <text x="872" y="142" text-anchor="middle" font-size="20" font-weight="700" fill="#1e2421">X</text>
-
-  <!-- Task 4: Visualizar confirmacao -->
-  <rect x="932" y="99" width="114" height="72" rx="10" fill="#ffffff" stroke="#1e2421" stroke-width="1.8"/>
-  <text x="989" y="131" text-anchor="middle" font-size="12.5" fill="#1e2421">Receber</text>
-  <text x="989" y="148" text-anchor="middle" font-size="12.5" fill="#1e2421">confirmação</text>
-
-  <!-- End Event -->
-  <circle cx="1095" cy="135" r="18" fill="#f3b7b7" stroke="#7f1d1d" stroke-width="4"/>
-  <text x="1095" y="172" text-anchor="middle" font-size="12" fill="#1e2421">Fim</text>
-
-  <!-- Pool 1 Sequence Flows -->
-  <line x1="130" y1="135" x2="170" y2="135" stroke="#1e2421" stroke-width="1.6" marker-end="url(#seqArrow)"/>
-  <line x1="308" y1="135" x2="348" y2="135" stroke="#1e2421" stroke-width="1.6" marker-end="url(#seqArrow)"/>
-  <line x1="510" y1="135" x2="546" y2="135" stroke="#1e2421" stroke-width="1.6" marker-end="url(#seqArrow)"/>
-  <polyline points="570,111 570,78 642,78" fill="none" stroke="#1e2421" stroke-width="1.6" marker-end="url(#seqArrow)"/>
-  <polyline points="570,159 570,193 642,193" fill="none" stroke="#1e2421" stroke-width="1.6" marker-end="url(#seqArrow)"/>
-  <polyline points="812,78 872,78 872,111" fill="none" stroke="#1e2421" stroke-width="1.6" marker-end="url(#seqArrow)"/>
-  <polyline points="812,193 872,193 872,159" fill="none" stroke="#1e2421" stroke-width="1.6" marker-end="url(#seqArrow)"/>
-  <line x1="896" y1="135" x2="932" y2="135" stroke="#1e2421" stroke-width="1.6" marker-end="url(#seqArrow)"/>
-  <line x1="1046" y1="135" x2="1075" y2="135" stroke="#1e2421" stroke-width="1.6" marker-end="url(#seqArrow)"/>
-
-  <!-- ================= POOL 2: BIBLIOTECARIO (ADMIN) ================= -->
-  <!-- Start Event -->
-  <circle cx="112" cy="395" r="18" fill="#b7dfb9" stroke="#2d6a33" stroke-width="2"/>
-  <text x="112" y="432" text-anchor="middle" font-size="12" fill="#1e2421">Início</text>
-
-  <!-- Task B1: Login Bibliotecario -->
-  <rect x="170" y="359" width="144" height="72" rx="10" fill="#ffffff" stroke="#1e2421" stroke-width="1.8"/>
-  <text x="242" y="391" text-anchor="middle" font-size="12.5" fill="#1e2421">Login e acesso</text>
-  <text x="242" y="408" text-anchor="middle" font-size="12.5" fill="#1e2421">ao Painel Admin</text>
-
-  <!-- XOR Gateway B1 -->
-  <polygon points="376,371 400,395 376,419 352,395" fill="#ffffff" stroke="#1e2421" stroke-width="1.8"/>
-  <text x="376" y="402" text-anchor="middle" font-size="20" font-weight="700" fill="#1e2421">X</text>
-
-  <!-- Upper Branch: Analisar solicitacao -> Emprestimo/Devolucao -->
-  <rect x="448" y="302" width="174" height="66" rx="10" fill="#ffffff" stroke="#1e2421" stroke-width="1.8"/>
-  <text x="535" y="331" text-anchor="middle" font-size="12.5" fill="#1e2421">Analisar solicitação</text>
-  <text x="535" y="348" text-anchor="middle" font-size="12.5" fill="#1e2421">(Aprovar ou Recusar)</text>
-
-  <rect x="668" y="302" width="178" height="66" rx="10" fill="#ffffff" stroke="#1e2421" stroke-width="1.8"/>
-  <text x="757" y="331" text-anchor="middle" font-size="12.5" fill="#1e2421">Registrar empréstimo</text>
-  <text x="757" y="348" text-anchor="middle" font-size="12.5" fill="#1e2421">ou devolução</text>
-
-  <!-- Lower Branch: Gerenciar acervo -->
-  <rect x="520" y="422" width="230" height="66" rx="10" fill="#ffffff" stroke="#1e2421" stroke-width="1.8"/>
-  <text x="635" y="451" text-anchor="middle" font-size="12.5" fill="#1e2421">Gerenciar acervo</text>
-  <text x="635" y="468" text-anchor="middle" font-size="12.5" fill="#1e2421">(Cadastrar, Editar ou Excluir livro)</text>
-
-  <!-- XOR Gateway B2 (Merge) -->
-  <polygon points="920,371 944,395 920,419 896,395" fill="#ffffff" stroke="#1e2421" stroke-width="1.8"/>
-  <text x="920" y="402" text-anchor="middle" font-size="20" font-weight="700" fill="#1e2421">X</text>
-
-  <!-- End Event -->
-  <circle cx="1095" cy="395" r="18" fill="#f3b7b7" stroke="#7f1d1d" stroke-width="4"/>
-  <text x="1095" y="432" text-anchor="middle" font-size="12" fill="#1e2421">Fim</text>
-
-  <!-- Pool 2 Sequence Flows -->
-  <line x1="130" y1="395" x2="170" y2="395" stroke="#1e2421" stroke-width="1.6" marker-end="url(#seqArrow)"/>
-  <line x1="314" y1="395" x2="352" y2="395" stroke="#1e2421" stroke-width="1.6" marker-end="url(#seqArrow)"/>
-  <polyline points="376,371 376,335 448,335" fill="none" stroke="#1e2421" stroke-width="1.6" marker-end="url(#seqArrow)"/>
-  <line x1="622" y1="335" x2="668" y2="335" stroke="#1e2421" stroke-width="1.6" marker-end="url(#seqArrow)"/>
-  <polyline points="376,419 376,455 520,455" fill="none" stroke="#1e2421" stroke-width="1.6" marker-end="url(#seqArrow)"/>
-  <polyline points="846,335 920,335 920,371" fill="none" stroke="#1e2421" stroke-width="1.6" marker-end="url(#seqArrow)"/>
-  <polyline points="750,455 920,455 920,419" fill="none" stroke="#1e2421" stroke-width="1.6" marker-end="url(#seqArrow)"/>
-  <line x1="944" y1="395" x2="1075" y2="395" stroke="#1e2421" stroke-width="1.6" marker-end="url(#seqArrow)"/>
-
-  <!-- ================= POOL 3: SISTEMA GUMA ================= -->
-  <!-- Start Event -->
-  <circle cx="112" cy="610" r="18" fill="#b7dfb9" stroke="#2d6a33" stroke-width="2"/>
-  <text x="112" y="647" text-anchor="middle" font-size="12" fill="#1e2421">Início</text>
-
-  <!-- Task S1: Validar sessao/CSRF/permissoes -->
-  <rect x="170" y="574" width="172" height="72" rx="10" fill="#ffffff" stroke="#1e2421" stroke-width="1.8"/>
-  <text x="256" y="599" text-anchor="middle" font-size="12.5" fill="#1e2421">Validar CSRF, Sessão</text>
-  <text x="256" y="616" text-anchor="middle" font-size="12.5" fill="#1e2421">HttpOnly e Permissões</text>
-  <text x="256" y="633" text-anchor="middle" font-size="11.5" fill="#4f5953">(Cliente / Bibliotecário)</text>
-
-  <!-- Task S2: Pepper + Hash/Salt -->
-  <rect x="386" y="574" width="176" height="72" rx="10" fill="#ffffff" stroke="#1e2421" stroke-width="1.8"/>
-  <text x="474" y="606" text-anchor="middle" font-size="12.5" fill="#1e2421">Aplicar Pepper (HMAC)</text>
-  <text x="474" y="623" text-anchor="middle" font-size="12.5" fill="#1e2421">e Autenticar (Hash + Salt)</text>
-
-  <!-- Task S3: Prepared Statements -->
-  <rect x="606" y="574" width="182" height="72" rx="10" fill="#ffffff" stroke="#1e2421" stroke-width="1.8"/>
-  <text x="697" y="599" text-anchor="middle" font-size="12.5" fill="#1e2421">Executar operação SQL</text>
-  <text x="697" y="616" text-anchor="middle" font-size="12.5" fill="#1e2421">(Prepared Statements</text>
-  <text x="697" y="633" text-anchor="middle" font-size="11.5" fill="#4f5953">e Triggers de Estoque)</text>
-
-  <!-- Task S4: Logs -->
-  <rect x="832" y="574" width="166" height="72" rx="10" fill="#ffffff" stroke="#1e2421" stroke-width="1.8"/>
-  <text x="915" y="606" text-anchor="middle" font-size="12.5" fill="#1e2421">Registrar Logs</text>
-  <text x="915" y="623" text-anchor="middle" font-size="12.5" fill="#1e2421">Operacionais</text>
-
-  <!-- End Event -->
-  <circle cx="1095" cy="610" r="18" fill="#f3b7b7" stroke="#7f1d1d" stroke-width="4"/>
-  <text x="1095" y="647" text-anchor="middle" font-size="12" fill="#1e2421">Fim</text>
-
-  <!-- Pool 3 Sequence Flows -->
-  <line x1="130" y1="610" x2="170" y2="610" stroke="#1e2421" stroke-width="1.6" marker-end="url(#seqArrow)"/>
-  <line x1="342" y1="610" x2="386" y2="610" stroke="#1e2421" stroke-width="1.6" marker-end="url(#seqArrow)"/>
-  <line x1="562" y1="610" x2="606" y2="610" stroke="#1e2421" stroke-width="1.6" marker-end="url(#seqArrow)"/>
-  <line x1="788" y1="610" x2="832" y2="610" stroke="#1e2421" stroke-width="1.6" marker-end="url(#seqArrow)"/>
-  <line x1="998" y1="610" x2="1075" y2="610" stroke="#1e2421" stroke-width="1.6" marker-end="url(#seqArrow)"/>
-
-  <!-- Data Store: PostgreSQL / Supabase -->
-  <g transform="translate(669, 695)">
-    <path d="M 0 10 L 0 46 A 28 9 0 0 0 56 46 L 56 10" fill="#ffffff" stroke="#1e2421" stroke-width="1.7"/>
-    <ellipse cx="28" cy="10" rx="28" ry="9" fill="#ffffff" stroke="#1e2421" stroke-width="1.7"/>
-    <path d="M 0 21 A 28 9 0 0 0 56 21" fill="none" stroke="#1e2421" stroke-width="1.3"/>
-    <path d="M 0 32 A 28 9 0 0 0 56 32" fill="none" stroke="#1e2421" stroke-width="1.3"/>
+  <!-- U1: Autenticar -->
+  <g filter="url(#cardShadow)">
+    <rect x="184" y="121" width="136" height="68" rx="8" fill="#ffffff" stroke="#163f35" stroke-width="1.6"/>
   </g>
-  <text x="697" y="769" text-anchor="middle" font-size="12" fill="#1e2421">Banco PostgreSQL / Supabase</text>
-  <text x="697" y="784" text-anchor="middle" font-size="11" fill="#4f5953">(RLS + Triggers + Integridade)</text>
+  <use href="#icoUser" x="192" y="128"/>
+  <text x="252" y="152" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">Cadastrar ou</text>
+  <text x="252" y="168" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">Fazer Login</text>
 
-  <!-- Data Object: Arquivos de Logs -->
-  <g transform="translate(894, 695)">
-    <path d="M 0 0 L 30 0 L 42 12 L 42 52 L 0 52 Z" fill="#ffffff" stroke="#1e2421" stroke-width="1.7"/>
-    <polyline points="30,0 30,12 42,12" fill="none" stroke="#1e2421" stroke-width="1.5"/>
+  <!-- U2: Buscar catalogo / Google Books -->
+  <g filter="url(#cardShadow)">
+    <rect x="356" y="121" width="146" height="68" rx="8" fill="#ffffff" stroke="#163f35" stroke-width="1.6"/>
   </g>
-  <text x="915" y="769" text-anchor="middle" font-size="12" fill="#1e2421">Logs de Auditoria</text>
-  <text x="915" y="784" text-anchor="middle" font-size="11" fill="#4f5953">(Login, Empréstimos, Acervo)</text>
+  <use href="#icoUser" x="364" y="128"/>
+  <text x="429" y="152" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">Buscar livro no</text>
+  <text x="429" y="168" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">Catálogo / Google</text>
 
-  <!-- Data Associations (dotted) -->
-  <line x1="697" y1="646" x2="697" y2="693" stroke="#1e2421" stroke-width="1.4" stroke-dasharray="3,3" marker-start="url(#dataArrow)" marker-end="url(#dataArrow)"/>
-  <line x1="915" y1="646" x2="915" y2="693" stroke="#1e2421" stroke-width="1.4" stroke-dasharray="3,3" marker-end="url(#dataArrow)"/>
+  <!-- U3: Solicitar emprestimo -->
+  <g filter="url(#cardShadow)">
+    <rect x="538" y="121" width="146" height="68" rx="8" fill="#ffffff" stroke="#163f35" stroke-width="1.6"/>
+  </g>
+  <use href="#icoUser" x="546" y="128"/>
+  <text x="611" y="152" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">Solicitar empréstimo</text>
+  <text x="611" y="168" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">ou cancelar pedido</text>
 
-  <!-- ================= MESSAGE FLOWS BETWEEN POOLS (dashed) ================= -->
-  <!-- Pool 1 (Solicitar emprestimo) -> Pool 2 (Analisar solicitacao) -->
-  <polyline points="727,226 727,252 535,252 535,302" fill="none" stroke="#1e2421" stroke-width="1.5" stroke-dasharray="7,5" marker-start="url(#msgStart)" marker-end="url(#msgArrow)"/>
+  <!-- U4: Retirar e devolver livro -->
+  <g filter="url(#cardShadow)">
+    <rect x="936" y="121" width="152" height="68" rx="8" fill="#ffffff" stroke="#163f35" stroke-width="1.6"/>
+  </g>
+  <use href="#icoUser" x="944" y="128"/>
+  <text x="1012" y="152" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">Acompanhar estante</text>
+  <text x="1012" y="168" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">e devolver livro</text>
 
-  <!-- Pool 1 (Cadastrar/Login) -> Pool 3 (Validar Sessao) via clean left corridor -->
-  <polyline points="239,171 239,246 330,246 330,545 256,545 256,574" fill="none" stroke="#1e2421" stroke-width="1.5" stroke-dasharray="7,5" marker-start="url(#msgStart)" marker-end="url(#msgArrow)"/>
+  <!-- End Event (Encerramento) -->
+  <circle cx="1196" cy="155" r="18" fill="#fee2e2" stroke="#b91c1c" stroke-width="4"/>
+  <text x="1196" y="190" text-anchor="middle" font-size="11.5" font-weight="600" fill="#991b1b">Fim</text>
 
-  <!-- Pool 2 (Login Admin) -> Pool 3 (Validar Sessao) -->
-  <line x1="230" y1="431" x2="230" y2="574" stroke="#1e2421" stroke-width="1.5" stroke-dasharray="7,5" marker-start="url(#msgStart)" marker-end="url(#msgArrow)"/>
+  <!-- ================= LANE 2 ELEMENTS (BIBLIOTECARIO) ================= -->
+  <!-- Gateway: Acao do Bibliotecario -->
+  <polygon points="598,316 622,340 598,364 574,340" fill="#fef3c7" stroke="#b45309" stroke-width="1.8"/>
+  <text x="598" y="346" text-anchor="middle" font-size="18" font-weight="700" fill="#92400e">X</text>
 
-  <!-- Pool 2 (Gerenciar acervo) -> Pool 3 (Executar operacao SQL) -->
-  <line x1="697" y1="488" x2="697" y2="574" stroke="#1e2421" stroke-width="1.5" stroke-dasharray="7,5" marker-start="url(#msgStart)" marker-end="url(#msgArrow)"/>
+  <!-- B1: Analisar solicitacao -->
+  <g filter="url(#cardShadow)">
+    <rect x="664" y="262" width="148" height="64" rx="8" fill="#ffffff" stroke="#b45309" stroke-width="1.6"/>
+  </g>
+  <use href="#icoUser" x="672" y="269"/>
+  <text x="738" y="291" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">Analisar pedido</text>
+  <text x="738" y="307" text-anchor="middle" font-size="11.5" fill="#64748b">(Aprovar / Recusar)</text>
+
+  <!-- Gateway: Aprovado? -->
+  <polygon points="866,270 890,294 866,318 842,294" fill="#fef3c7" stroke="#b45309" stroke-width="1.8"/>
+  <text x="866" y="300" text-anchor="middle" font-size="18" font-weight="700" fill="#92400e">X</text>
+  <text x="866" y="261" text-anchor="middle" font-size="10.5" font-weight="600" fill="#92400e">Aprovado?</text>
+
+  <!-- B2: Registrar retirada/devolucao -->
+  <g filter="url(#cardShadow)">
+    <rect x="936" y="262" width="152" height="64" rx="8" fill="#ffffff" stroke="#b45309" stroke-width="1.6"/>
+  </g>
+  <use href="#icoUser" x="944" y="269"/>
+  <text x="1012" y="291" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">Confirmar retirada</text>
+  <text x="1012" y="307" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">e devolução</text>
+
+  <!-- B3: Gerenciar acervo -->
+  <g filter="url(#cardShadow)">
+    <rect x="664" y="358" width="218" height="62" rx="8" fill="#ffffff" stroke="#b45309" stroke-width="1.6"/>
+  </g>
+  <use href="#icoUser" x="672" y="365"/>
+  <text x="773" y="386" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">Gerenciar acervo no Painel</text>
+  <text x="773" y="402" text-anchor="middle" font-size="11.2" fill="#64748b">(Cadastrar, Editar ou Excluir livro)</text>
+
+  <!-- End Event (Recusado / Acervo atualizado) -->
+  <circle cx="1196" cy="389" r="18" fill="#fee2e2" stroke="#b91c1c" stroke-width="4"/>
+  <text x="1196" y="422" text-anchor="middle" font-size="11" font-weight="600" fill="#991b1b">Encerrado</text>
+
+  <!-- ================= LANE 3 ELEMENTS (API LARAVEL BFF) ================= -->
+  <!-- S1: Autenticar (Pepper + CSRF + HttpOnly) -->
+  <g filter="url(#cardShadow)">
+    <rect x="174" y="468" width="176" height="72" rx="8" fill="#ffffff" stroke="#1d4ed8" stroke-width="1.6"/>
+  </g>
+  <use href="#icoService" x="182" y="475"/>
+  <text x="262" y="494" text-anchor="middle" font-size="11.8" font-weight="600" fill="#1e293b">Aplicar Pepper (HMAC),</text>
+  <text x="262" y="510" text-anchor="middle" font-size="11.8" font-weight="600" fill="#1e293b">validar CSRF e criar</text>
+  <text x="262" y="526" text-anchor="middle" font-size="11.2" fill="#475569">Sessão HttpOnly</text>
+
+  <!-- S2: Validar perfil (RBAC) + Cache -->
+  <g filter="url(#cardShadow)">
+    <rect x="386" y="468" width="166" height="72" rx="8" fill="#ffffff" stroke="#1d4ed8" stroke-width="1.6"/>
+  </g>
+  <use href="#icoService" x="394" y="475"/>
+  <text x="469" y="496" text-anchor="middle" font-size="11.8" font-weight="600" fill="#1e293b">Validar Permissão</text>
+  <text x="469" y="512" text-anchor="middle" font-size="11.2" fill="#475569">(Cliente / Bibliotecário)</text>
+  <text x="469" y="527" text-anchor="middle" font-size="11" fill="#475569">e consultar cache</text>
+
+  <!-- S3: Prepared Statements + Triggers -->
+  <g filter="url(#cardShadow)">
+    <rect x="664" y="468" width="218" height="72" rx="8" fill="#ffffff" stroke="#1d4ed8" stroke-width="1.6"/>
+  </g>
+  <use href="#icoService" x="672" y="475"/>
+  <text x="773" y="496" text-anchor="middle" font-size="11.8" font-weight="600" fill="#1e293b">Executar transação SQL</text>
+  <text x="773" y="512" text-anchor="middle" font-size="11.2" fill="#475569">(Prepared Statements +</text>
+  <text x="773" y="527" text-anchor="middle" font-size="11.2" fill="#475569">Triggers de Estoque / RLS)</text>
+
+  <!-- S4: Registrar Logs -->
+  <g filter="url(#cardShadow)">
+    <rect x="936" y="468" width="168" height="72" rx="8" fill="#ffffff" stroke="#1d4ed8" stroke-width="1.6"/>
+  </g>
+  <use href="#icoService" x="944" y="475"/>
+  <text x="1020" y="501" text-anchor="middle" font-size="11.8" font-weight="600" fill="#1e293b">Registrar Logs</text>
+  <text x="1020" y="517" text-anchor="middle" font-size="11.2" fill="#475569">Operacionais (Auditoria)</text>
+
+  <!-- Data Store: PostgreSQL -->
+  <g transform="translate(747, 570)">
+    <path d="M 0 8 L 0 38 A 26 8 0 0 0 52 38 L 52 8" fill="#ffffff" stroke="#334155" stroke-width="1.6"/>
+    <ellipse cx="26" cy="8" rx="26" ry="8" fill="#f1f5f9" stroke="#334155" stroke-width="1.6"/>
+    <path d="M 0 18 A 26 8 0 0 0 52 18" fill="none" stroke="#334155" stroke-width="1.1"/>
+  </g>
+  <text x="773" y="636" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">PostgreSQL / Supabase</text>
+
+  <!-- Data Object: Logs -->
+  <g transform="translate(1002, 570)">
+    <path d="M 0 0 L 24 0 L 35 11 L 35 44 L 0 44 Z" fill="#ffffff" stroke="#334155" stroke-width="1.6"/>
+    <polyline points="24,0 24,11 35,11" fill="none" stroke="#334155" stroke-width="1.4"/>
+  </g>
+  <text x="1020" y="636" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">Logs de Auditoria</text>
+
+  <!-- ================= SEQUENCE FLOWS (INSIDE POOL) ================= -->
+  <!-- Start -> U1 -->
+  <line x1="150" y1="155" x2="184" y2="155" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
+  <!-- U1 -> S1 (crosses lane cleanly) -->
+  <line x1="252" y1="189" x2="252" y2="468" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
+  <!-- S1 -> S2 -->
+  <line x1="350" y1="504" x2="386" y2="504" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
+  <!-- S2 -> U2 (returns authenticated user to catalog) -->
+  <line x1="429" y1="468" x2="429" y2="189" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
+  <!-- U2 -> U3 -->
+  <line x1="502" y1="155" x2="538" y2="155" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
+  <!-- U3 -> Gateway in Lane 2 -->
+  <polyline points="598,189 598,316" fill="none" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
+  <!-- S2 -> Gateway in Lane 2 (Admin direct entry) -->
+  <polyline points="510,468 510,340 574,340" fill="none" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
+
+  <!-- Gateway -> B1 (Analisar) -->
+  <polyline points="598,316 598,294 664,294" fill="none" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
+  <!-- Gateway -> B3 (Gerenciar acervo) -->
+  <polyline points="598,364 598,389 664,389" fill="none" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
+
+  <!-- B1 -> Gateway Aprovado? -->
+  <line x1="812" y1="294" x2="842" y2="294" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
+  <!-- Aprovado? Sim -> B2 -->
+  <line x1="890" y1="294" x2="936" y2="294" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
+  <text x="912" y="286" text-anchor="middle" font-size="10.5" font-weight="700" fill="#15803d">Sim</text>
+  <!-- Aprovado? Nao -> Encerrado -->
+  <polyline points="866,318 866,342 1144,342 1144,389 1176,389" fill="none" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
+  <text x="908" y="336" text-anchor="middle" font-size="10.5" font-weight="700" fill="#b91c1c">Não</text>
+
+  <!-- B3 -> S3 (Acervo grava SQL) -->
+  <line x1="773" y1="420" x2="773" y2="468" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
+  <!-- B2 -> S3 / S4 -->
+  <line x1="1012" y1="326" x2="1012" y2="468" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
+  <!-- S3 -> S4 -->
+  <line x1="882" y1="504" x2="936" y2="504" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
+  <!-- B2 -> U4 (Leitor acompanha e devolve) -->
+  <line x1="1012" y1="262" x2="1012" y2="189" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
+  <!-- U4 -> Fim -->
+  <line x1="1088" y1="155" x2="1176" y2="155" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
+  <!-- End Event Lane 3 -->
+  <circle cx="1196" cy="504" r="18" fill="#fee2e2" stroke="#b91c1c" stroke-width="4"/>
+  <text x="1196" y="538" text-anchor="middle" font-size="11" font-weight="600" fill="#991b1b">Fim</text>
+
+  <!-- S4 -> End Event Lane 3 -->
+  <line x1="1104" y1="504" x2="1176" y2="504" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
+
+  <!-- ================= DATA ASSOCIATIONS (DOTTED) ================= -->
+  <line x1="773" y1="540" x2="773" y2="568" stroke="#475569" stroke-width="1.4" stroke-dasharray="3,3" marker-start="url(#dataV)" marker-end="url(#dataV)"/>
+  <line x1="1020" y1="540" x2="1020" y2="568" stroke="#475569" stroke-width="1.4" stroke-dasharray="3,3" marker-end="url(#dataV)"/>
+
+  <!-- ================= MESSAGE FLOWS TO EXTERNAL POOL (DASHED) ================= -->
+  <!-- S1 <-> Supabase Auth -->
+  <line x1="262" y1="540" x2="262" y2="682" stroke="#475569" stroke-width="1.5" stroke-dasharray="6,4" marker-start="url(#msgStart)" marker-end="url(#msgEnd)"/>
+  <text x="270" y="669" font-size="10" fill="#475569">Auth / JWT</text>
+  <!-- S2 <-> Google Books / Auth verify -->
+  <line x1="469" y1="540" x2="469" y2="682" stroke="#475569" stroke-width="1.5" stroke-dasharray="6,4" marker-start="url(#msgStart)" marker-end="url(#msgEnd)"/>
+  <text x="477" y="669" font-size="10" fill="#475569">Google Books / Token</text>
 </svg>
