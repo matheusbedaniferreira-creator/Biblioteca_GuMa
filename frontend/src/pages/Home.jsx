@@ -59,7 +59,11 @@ export default function Home() {
 
   useEffect(() => {
     api('/livros/destaques')
-      .then(setCollections)
+      .then((data) => {
+        if (data && Array.isArray(data.destaques) && Array.isArray(data.mais_procurados)) {
+          setCollections(data);
+        }
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -97,7 +101,7 @@ export default function Home() {
     </div></section>
 
     <div className="container collections">
-      {!loading && collections.destaques.length > 0 && (
+      {!loading && collections?.destaques?.length > 0 && (
         <section className="collection-section"><div className="section-heading"><div><h2>Destaques do acervo</h2><p>Títulos selecionados pela equipe da biblioteca.</p></div><Link className="text-link" to="/catalogo">Ver catálogo <ArrowUpRight size={18}/></Link></div>
           <div className="book-grid">{collections.destaques.slice(0, 4).map(b => <BookCard key={b.id_livro} book={b}/>)}</div>
         </section>
@@ -134,7 +138,7 @@ export default function Home() {
         </div>
       </section>
 
-      {!loading && collections.mais_procurados.length > 0 && (
+      {!loading && collections?.mais_procurados?.length > 0 && (
         <section className="collection-section"><div className="section-heading"><div><h2>Mais procurados</h2><p>Os títulos com mais solicitações pelos leitores.</p></div><Link className="text-link" to="/catalogo">Explorar catálogo <ArrowUpRight size={18}/></Link></div>
           <div className="book-grid">{collections.mais_procurados.slice(0, 4).map(b => <BookCard key={b.id_livro} book={b}/>)}</div>
         </section>
