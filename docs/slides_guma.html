@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GuMa — Apresentação do Sistema</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f2efe8;
+      --card: #faf9f5;
+      --green: #163f35;
+      --gold: #b8894c;
+      --ink: #1b2420;
+      --muted: #5c6660;
+      --line: #ddd7ca;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background: #1b2420;
+      color: var(--ink);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .deck {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .slide {
+      display: none;
+      width: min(1160px, 100%);
+      height: min(680px, calc(100vh - 86px));
+      background: var(--bg);
+      border-radius: 18px;
+      padding: 46px 56px;
+      box-shadow: 0 24px 60px rgba(0,0,0,.35);
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+    .slide.active { display: flex; }
+    .slide.cover {
+      background: linear-gradient(135deg, #12332b 0%, #163f35 60%, #1f5346 100%);
+      color: #faf9f5;
+      justify-content: center;
+      gap: 22px;
+    }
+    .tag {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+    h1 {
+      font-family: 'Newsreader', Georgia, serif;
+      font-size: clamp(2.6rem, 4.4vw, 3.8rem);
+      font-weight: 500;
+      line-height: 1.08;
+    }
+    h2 {
+      font-family: 'Newsreader', Georgia, serif;
+      font-size: clamp(1.9rem, 3vw, 2.5rem);
+      font-weight: 500;
+      color: var(--green);
+      margin-bottom: 6px;
+    }
+    .lead {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 720px;
+      line-height: 1.55;
+    }
+    .cover .lead { color: #d3e0da; font-size: 1.15rem; }
+    .pills { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+    .pill {
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.22);
+      font-size: .88rem;
+      font-weight: 600;
+      color: #f4e6cc;
+    }
+
+    /* Diagrama de caixas */
+    .flow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin: 18px 0;
+    }
+    .box {
+      flex: 1;
+      background: var(--card);
+      border: 1.5px solid var(--line);
+      border-radius: 14px;
+      padding: 20px 18px;
+      text-align: center;
+    }
+    .box.dark {
+      background: var(--green);
+      border-color: var(--green);
+      color: #fff;
+    }
+    .box svg { width: 34px; height: 34px; margin-bottom: 10px; }
+    .box h3 { font-size: 1.02rem; font-weight: 700; margin-bottom: 6px; }
+    .box p { font-size: .85rem; color: var(--muted); line-height: 1.45; }
+    .box.dark p { color: #cfe0d8; }
+    .arrow { font-size: 1.6rem; color: var(--gold); font-weight: 700; flex-shrink: 0; }
+
+    /* Grid de cards simples */
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 12px 0; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: center; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px 20px;
+    }
+    .card strong { display: block; font-size: .96rem; color: var(--green); margin-bottom: 6px; }
+    .card span { font-size: .84rem; color: var(--muted); line-height: 1.45; display: block; }
+    .step-num {
+      display: inline-grid;
+      place-items: center;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      font-size: .82rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .bpmn-frame {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      text-align: center;
+      max-height: 410px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .bpmn-frame img {
+      max-width: 100%;
+      max-height: 385px;
+      object-fit: contain;
+    }
+    .slide-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: .8rem;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+    }
+    .cover .slide-foot { border-color: rgba(255,255,255,.15); color: #b7cbc2; position: absolute; bottom: 28px; left: 56px; right: 56px; }
+
+    /* Barra inferior de navegacao */
+    .controls {
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      color: #e5e7eb;
+      font-size: .85rem;
+    }
+    .controls button {
+      background: #2a3631;
+      color: #fff;
+      border: 1px solid #3f4e48;
+      border-radius: 8px;
+      padding: 7px 16px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .controls button:hover { background: var(--green); }
+    @media print {
+      body { background: #fff; height: auto; overflow: visible; }
+      .controls { display: none; }
+      .deck { display: block; padding: 0; }
+      .slide { display: flex !important; page-break-after: always; margin: 0 auto 20px; box-shadow: none; border: 1px solid #ddd; }
+    }
+  </style>
+</head>
+<body>
+  <div class="deck">
+    <!-- SLIDE 1: CAPA -->
+    <section class="slide cover active">
+      <div>
+        <span class="tag">Engenharia de Software • Apresentação</span>
+        <h1>GuMa — Sistema de<br/>Biblioteca Digital</h1>
+      </div>
+      <p class="lead">
+        Plataforma web para busca no acervo, solicitação de empréstimos e gestão administrativa com foco em segurança e arquitetura em camadas.
+      </p>
+      <div class="pills">
+        <span class="pill">React + Vite</span>
+        <span class="pill">Laravel 12 (API BFF)</span>
+        <span class="pill">Supabase (Auth + PostgreSQL)</span>
+        <span class="pill">Google Books API</span>
+      </div>
+      <div class="slide-foot">
+        <span>Projeto Biblioteca GuMa</span>
+        <span>Slide 1 / 6</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: ARQUITETURA BFF -->
+    <section class="slide">
+      <div>
+        <span class="tag">Arquitetura</span>
+        <h2>Como as camadas se comunicam</h2>
+        <p class="lead">O sistema usa o padrão <strong>BFF (Backend for Frontend)</strong>: o navegador só conversa com o Laravel.</p>
+      </div>
+
+      <div class="flow">
+        <div class="box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#163f35" stroke-width="1.8"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 20h8M12 18v2"/></svg>
+          <h3>Navegador (React)</h3>
+          <p>Interface do usuário.<br/>Recebe apenas cookie <strong>HttpOnly</strong>.<br/>Zero chaves ou tokens.</p>
+        </div>
+        <span class="arrow">→</span>
+        <div class="box dark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#f4e6cc" stroke-width="1.8"><rect x="4" y="4" width="16" height="6" rx="1.5"/><rect x="4" y="14" width="16" height="6" rx="1.5"/></svg>
+          <h3>API Laravel (BFF)</h3>
+          <p>Valida sessão, CSRF e permissões.<br/>Aplica Pepper, cache e registra logs.</p>
+        </div>
+        <span class="arrow">→</span>
+        <div class="box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#b8894c" stroke-width="1.8"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg>
+          <h3>Supabase &amp; APIs</h3>
+          <p>PostgreSQL (RLS + Triggers),<br/>Supabase Auth (Hash + Salt)<br/>e Google Books API.</p>
+        </div>
+      </div>
+
+      <div class="slide-foot">
+        <span>GuMa • Arquitetura BFF</span>
+        <span>Slide 2 / 6</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: PASSAGEM DO .ENV -->
+    <section class="slide">
+      <div>
+        <span class="tag">Configuração &amp; Segredos</span>
+        <h2>Como funciona a passagem do <code>.env</code></h2>
+        <p class="lead">Nenhuma senha ou chave secreta é enviada para o código JavaScript do navegador.</p>
+      </div>
+
+      <div class="flow">
+        <div class="box">
+          <span class="step-num">1</span>
+          <h3><code>backend/.env</code></h3>
+          <p>Arquivo local (fora do Git).<br/>Guarda senha do banco, chaves Supabase, <code>PASSWORD_PEPPER</code>, <code>APP_KEY</code> e Google Books.</p>
+        </div>
+        <span class="arrow">→</span>
+        <div class="box">
+          <span class="step-num">2</span>
+          <h3><code>config/*.php</code></h3>
+          <p>Arquivos <code>database.php</code>, <code>services.php</code> e <code>session.php</code> leem o arquivo via <code>env(...)</code>.</p>
+        </div>
+        <span class="arrow">→</span>
+        <div class="box dark">
+          <span class="step-num" style="background:#b8894c;">3</span>
+          <h3>Controllers &amp; Middlewares</h3>
+          <p>Usam os valores no servidor via <code>config(...)</code> com total isolamento do frontend.</p>
+        </div>
+      </div>
+
+      <div class="slide-foot">
+        <span>GuMa • Proteção de Credenciais</span>
+        <span>Slide 3 / 6</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: JORNADA DO LEITOR -->
+    <section class="slide">
+      <div>
+        <span class="tag">Fluxo do Usuário</span>
+        <h2>O caminho do Leitor no sistema</h2>
+        <p class="lead">Do acesso inicial até a solicitação de retirada de um livro.</p>
+      </div>
+
+      <div class="flow">
+        <div class="box">
+          <span class="step-num">1</span>
+          <h3>Entrar ou Cadastrar</h3>
+          <p>Login por e-mail ou Google (OAuth PKCE) em <code>/login</code>. Sessão salva no servidor.</p>
+        </div>
+        <span class="arrow">→</span>
+        <div class="box">
+          <span class="step-num">2</span>
+          <h3>Explorar Acervo</h3>
+          <p>Busca rápida na Home, no Catálogo local (<code>/catalogo</code>) ou no Google Books.</p>
+        </div>
+        <span class="arrow">→</span>
+        <div class="box">
+          <span class="step-num">3</span>
+          <h3>Solicitar Livro</h3>
+          <p>Clique em <strong>Solicitar empréstimo</strong>. O banco valida estoque com transação.</p>
+        </div>
+        <span class="arrow">→</span>
+        <div class="box dark">
+          <span class="step-num" style="background:#b8894c;">4</span>
+          <h3>Minha Estante</h3>
+          <p>Acompanha pedidos pendentes, prazos de devolução e histórico em <code>/minha-conta</code>.</p>
+        </div>
+      </div>
+
+      <div class="slide-foot">
+        <span>GuMa • Experiência do Leitor</span>
+        <span>Slide 4 / 6</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: PAINEL DO BIBLIOTECÁRIO & SEGURANÇA -->
+    <section class="slide">
+      <div>
+        <span class="tag">Gestão &amp; Segurança</span>
+        <h2>Painel do Bibliotecário e Proteções</h2>
+        <p class="lead">Acesso restrito a perfis cadastrados na tabela <code>bibliotecarios</code>.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <strong>Permissões (RBAC)</strong>
+          <span><code>Guard.jsx</code> no React + <code>EnsureBibliotecario</code> na API bloqueiam rotas <code>/admin</code> para leitores comuns (HTTP 403).</span>
+        </div>
+        <div class="card">
+          <strong>Hash + Salt + Pepper</strong>
+          <span>Laravel aplica HMAC-SHA256 com <code>PASSWORD_PEPPER</code> antes do Supabase Auth gerar Salt único + Hash seguro.</span>
+        </div>
+        <div class="card">
+          <strong>SQL Injection (Prepared)</strong>
+          <span>100% das queries usam Prepared Statements via Query Builder + escape em buscas <code>ILIKE</code>.</span>
+        </div>
+        <div class="card">
+          <strong>Gestão de Acervo</strong>
+          <span>Cadastro (com Google Books), edição e exclusão segura por <code>id_livro</code> protegendo histórico de empréstimos.</span>
+        </div>
+        <div class="card">
+          <strong>Estoque Atômico (Triggers)</strong>
+          <span>Transações com <code>lockForUpdate()</code> e triggers SQL reduzem/devolvem exemplares automaticamente.</span>
+        </div>
+        <div class="card">
+          <strong>Logs de Auditoria</strong>
+          <span>Registros automáticos de login, tentativas inválidas, solicitações, empréstimos, devoluções e exclusões.</span>
+        </div>
+      </div>
+
+      <div class="slide-foot">
+        <span>GuMa • Regras de Negócio e Segurança</span>
+        <span>Slide 5 / 6</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: MODELO BPMN -->
+    <section class="slide">
+      <div>
+        <span class="tag">Modelagem de Processos</span>
+        <h2>Modelo BPMN 2.0 do Sistema GuMa</h2>
+        <p class="lead">Visão integrada entre Leitor, Bibliotecário e Sistema (API + Banco).</p>
+      </div>
+
+      <div class="bpmn-frame">
+        <img src="./bpmn_guma.png" alt="Diagrama BPMN 2.0 do Sistema GuMa" />
+      </div>
+
+      <div class="slide-foot">
+        <span>GuMa • Git &amp; GitHub Versionado</span>
+        <span>Slide 6 / 6</span>
+      </div>
+    </section>
+  </div>
+
+  <div class="controls">
+    <button type="button" onclick="move(-1)">← Anterior</button>
+    <span id="counter">1 / 6</span>
+    <button type="button" onclick="move(1)">Próximo →</button>
+    <button type="button" onclick="window.print()">Salvar PDF</button>
+  </div>
+
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const counter = document.getElementById('counter');
+    let idx = 0;
+    function show(n) {
+      idx = (n + slides.length) % slides.length;
+      slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+      counter.textContent = `${idx + 1} / ${slides.length}`;
+    }
+    function move(d) { show(idx + d); }
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') move(1);
+      if (e.key === 'ArrowLeft') move(-1);
+    });
+  </script>
+</body>
+</html>
