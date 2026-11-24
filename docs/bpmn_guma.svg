@@ -1,252 +1,129 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 780" width="1280" height="780" font-family="Segoe UI, Inter, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 620" width="1100" height="620" font-family="Segoe UI, Arial, sans-serif">
   <defs>
-    <marker id="seq" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M 0 1.2 L 10 5 L 0 8.8 z" fill="#2b3a34"/>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#1e293b"/>
     </marker>
-    <marker id="msgEnd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#ffffff" stroke="#475569" stroke-width="1.4"/>
-    </marker>
-    <marker id="msgStart" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7">
-      <circle cx="5" cy="5" r="3.4" fill="#ffffff" stroke="#475569" stroke-width="1.4"/>
-    </marker>
-    <marker id="dataV" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <marker id="dotArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
       <path d="M 1 1.5 L 9 5 L 1 8.5" fill="none" stroke="#475569" stroke-width="1.5"/>
     </marker>
-    <filter id="cardShadow" x="-6%" y="-6%" width="112%" height="118%">
-      <feDropShadow dx="0" dy="2" stdDeviation="2.2" flood-color="#0f2922" flood-opacity="0.08"/>
-    </filter>
-    <!-- BPMN User Task Icon -->
-    <g id="icoUser">
-      <circle cx="7" cy="4.2" r="2.8" fill="none" stroke="#163f35" stroke-width="1.3"/>
-      <path d="M 2 12.2 C 2 9.2 4.2 7.8 7 7.8 C 9.8 7.8 12 9.2 12 12.2" fill="none" stroke="#163f35" stroke-width="1.3" stroke-linecap="round"/>
-    </g>
-    <!-- BPMN Service Task (Gear) Icon -->
-    <g id="icoService">
-      <circle cx="7" cy="7" r="2.6" fill="none" stroke="#1d4ed8" stroke-width="1.3"/>
-      <path d="M7 1.5 V3.2 M7 10.8 V12.5 M1.5 7 H3.2 M10.8 7 H12.5 M3.1 3.1 L4.3 4.3 M9.7 9.7 L10.9 10.9 M10.9 3.1 L9.7 4.3 M4.3 9.7 L3.1 10.9" stroke="#1d4ed8" stroke-width="1.3" stroke-linecap="round"/>
-    </g>
   </defs>
 
-  <!-- Canvas Background -->
-  <rect width="1280" height="780" fill="#f8faf9"/>
+  <rect width="1100" height="620" fill="#ffffff"/>
 
-  <!-- Diagram Header -->
-  <text x="24" y="34" font-size="18" font-weight="700" fill="#163f35">BPMN 2.0 — Fluxo de Empréstimo, Acervo e Segurança (GuMa)</text>
-  <text x="24" y="52" font-size="11.5" fill="#5b6b64">Processo colaborativo ponta a ponta: Pool principal dividido em 3 raias (Swimlanes) + Pool externo de serviços</text>
+  <!-- Header -->
+  <text x="20" y="28" font-size="16" font-weight="700" fill="#163f35">BPMN 2.0 — Fluxo Simplificado (Biblioteca GuMa)</text>
 
-  <!-- ================= MAIN POOL: SISTEMA BIBLIOTECA GUMA ================= -->
-  <rect x="24" y="68" width="1232" height="584" rx="4" fill="#ffffff" stroke="#163f35" stroke-width="2"/>
-  <!-- Pool Vertical Title Bar -->
-  <rect x="24" y="68" width="36" height="584" fill="#163f35"/>
-  <text x="42" y="360" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff" letter-spacing="0.8" transform="rotate(-90 42 360)">SISTEMA BIBLIOTECA GUMA</text>
+  <!-- Main Pool -->
+  <rect x="20" y="42" width="1060" height="558" fill="#ffffff" stroke="#163f35" stroke-width="2"/>
+  <rect x="20" y="42" width="32" height="558" fill="#163f35"/>
+  <text x="36" y="321" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff" transform="rotate(-90 36 321)">BIBLIOTECA GUMA</text>
 
-  <!-- Lane 1: Leitor (Cliente) -->
-  <rect x="60" y="68" width="1196" height="174" fill="#fbfdfb" stroke="#cbd5e1" stroke-width="1"/>
-  <rect x="60" y="68" width="34" height="174" fill="#e6f0ec" stroke="#cbd5e1" stroke-width="1"/>
-  <text x="77" y="155" text-anchor="middle" font-size="12.5" font-weight="700" fill="#163f35" transform="rotate(-90 77 155)">Leitor (Cliente)</text>
+  <!-- Lane 1: Leitor -->
+  <rect x="52" y="42" width="1028" height="170" fill="#fafcfb" stroke="#cbd5e1" stroke-width="1"/>
+  <rect x="52" y="42" width="30" height="170" fill="#e6f0ec" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="67" y="127" text-anchor="middle" font-size="12" font-weight="700" fill="#163f35" transform="rotate(-90 67 127)">Leitor</text>
 
-  <!-- Lane 2: Bibliotecario (Admin) -->
-  <rect x="60" y="242" width="1196" height="196" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
-  <rect x="60" y="242" width="34" height="196" fill="#f3eee3" stroke="#cbd5e1" stroke-width="1"/>
-  <text x="77" y="340" text-anchor="middle" font-size="12.5" font-weight="700" fill="#7c5628" transform="rotate(-90 77 340)">Bibliotecário</text>
+  <!-- Lane 2: Bibliotecario -->
+  <rect x="52" y="212" width="1028" height="170" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+  <rect x="52" y="212" width="30" height="170" fill="#f5efe4" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="67" y="297" text-anchor="middle" font-size="12" font-weight="700" fill="#7c5628" transform="rotate(-90 67 297)">Bibliotecário</text>
 
-  <!-- Lane 3: API Laravel (Backend & Seguranca) -->
-  <rect x="60" y="438" width="1196" height="214" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
-  <rect x="60" y="438" width="34" height="214" fill="#e8eef7" stroke="#cbd5e1" stroke-width="1"/>
-  <text x="77" y="545" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1e3a5f" transform="rotate(-90 77 545)">API Laravel (BFF)</text>
+  <!-- Lane 3: Sistema -->
+  <rect x="52" y="382" width="1028" height="218" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+  <rect x="52" y="382" width="30" height="218" fill="#e8eef7" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="67" y="491" text-anchor="middle" font-size="12" font-weight="700" fill="#1e3a5f" transform="rotate(-90 67 491)">Sistema</text>
 
-  <!-- ================= EXTERNAL BLACK-BOX POOL (BOTTOM) ================= -->
-  <rect x="24" y="682" width="1232" height="68" rx="4" fill="#f1f5f9" stroke="#475569" stroke-width="1.8"/>
-  <rect x="24" y="682" width="36" height="68" fill="#475569"/>
-  <text x="650" y="713" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1e293b">Serviços Externos: Supabase Auth (Hash + Salt / OAuth) &amp; Google Books API</text>
-  <text x="650" y="732" text-anchor="middle" font-size="11" fill="#64748b">Pool externo (caixa-preta) — acessado exclusivamente pelo servidor Laravel via HTTPS</text>
+  <!-- ================= LANE 1: LEITOR ================= -->
+  <circle cx="118" cy="127" r="16" fill="#dcfce7" stroke="#15803d" stroke-width="2"/>
+  <text x="118" y="159" text-anchor="middle" font-size="11" fill="#1e293b">Início</text>
 
-  <!-- ================= LANE 1 ELEMENTS (LEITOR) ================= -->
-  <!-- Single Process Start Event -->
-  <circle cx="132" cy="155" r="18" fill="#dcfce7" stroke="#15803d" stroke-width="2.2"/>
-  <text x="132" y="190" text-anchor="middle" font-size="11.5" font-weight="600" fill="#166534">Acesso ao site</text>
+  <rect x="166" y="97" width="140" height="60" rx="8" fill="#ffffff" stroke="#163f35" stroke-width="1.6"/>
+  <text x="236" y="124" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">Cadastrar / Login</text>
+  <text x="236" y="140" text-anchor="middle" font-size="10.5" fill="#64748b">(E-mail ou Google)</text>
 
-  <!-- U1: Autenticar -->
-  <g filter="url(#cardShadow)">
-    <rect x="184" y="121" width="136" height="68" rx="8" fill="#ffffff" stroke="#163f35" stroke-width="1.6"/>
+  <rect x="346" y="97" width="146" height="60" rx="8" fill="#ffffff" stroke="#163f35" stroke-width="1.6"/>
+  <text x="419" y="124" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">Buscar Livro</text>
+  <text x="419" y="140" text-anchor="middle" font-size="10.5" fill="#64748b">(Catálogo / Google)</text>
+
+  <rect x="532" y="97" width="150" height="60" rx="8" fill="#ffffff" stroke="#163f35" stroke-width="1.6"/>
+  <text x="607" y="124" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">Solicitar Empréstimo</text>
+  <text x="607" y="140" text-anchor="middle" font-size="10.5" fill="#64748b">(ou cancelar pedido)</text>
+
+  <rect x="820" y="97" width="140" height="60" rx="8" fill="#ffffff" stroke="#163f35" stroke-width="1.6"/>
+  <text x="890" y="124" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">Retirar e Devolver</text>
+  <text x="890" y="140" text-anchor="middle" font-size="10.5" fill="#64748b">(Minha Estante)</text>
+
+  <circle cx="1024" cy="127" r="16" fill="#fee2e2" stroke="#b91c1c" stroke-width="3.5"/>
+  <text x="1024" y="159" text-anchor="middle" font-size="11" fill="#1e293b">Fim</text>
+
+  <!-- Lane 1 Arrows -->
+  <line x1="134" y1="127" x2="166" y2="127" stroke="#1e293b" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <line x1="306" y1="127" x2="346" y2="127" stroke="#1e293b" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <line x1="492" y1="127" x2="532" y2="127" stroke="#1e293b" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <line x1="682" y1="127" x2="820" y2="127" stroke="#1e293b" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <line x1="960" y1="127" x2="1006" y2="127" stroke="#1e293b" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+  <!-- ================= LANE 2: BIBLIOTECARIO ================= -->
+  <polygon points="607,273 629,295 607,317 585,295" fill="#fef3c7" stroke="#b45309" stroke-width="1.7"/>
+  <text x="607" y="301" text-anchor="middle" font-size="17" font-weight="700" fill="#92400e">X</text>
+
+  <rect x="668" y="232" width="160" height="56" rx="8" fill="#ffffff" stroke="#b45309" stroke-width="1.6"/>
+  <text x="748" y="257" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">Aprovar ou Recusar</text>
+  <text x="748" y="273" text-anchor="middle" font-size="10.5" fill="#64748b">Solicitação / Devolução</text>
+
+  <rect x="668" y="306" width="160" height="56" rx="8" fill="#ffffff" stroke="#b45309" stroke-width="1.6"/>
+  <text x="748" y="331" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">Gerenciar Acervo</text>
+  <text x="748" y="347" text-anchor="middle" font-size="10.5" fill="#64748b">(Criar, Editar, Excluir)</text>
+
+  <circle cx="1024" cy="295" r="16" fill="#fee2e2" stroke="#b91c1c" stroke-width="3.5"/>
+  <text x="1024" y="327" text-anchor="middle" font-size="11" fill="#1e293b">Fim</text>
+
+  <!-- Lane 2 & Cross-Lane Arrows -->
+  <line x1="607" y1="157" x2="607" y2="273" stroke="#1e293b" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <polyline points="629,295 648,295 648,260 668,260" fill="none" stroke="#1e293b" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <polyline points="629,295 648,295 648,334 668,334" fill="none" stroke="#1e293b" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <polyline points="828,260 890,260 890,157" fill="none" stroke="#1e293b" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <polyline points="828,334 940,334 940,295 1006,295" fill="none" stroke="#1e293b" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+  <!-- ================= LANE 3: SISTEMA ================= -->
+  <rect x="166" y="416" width="164" height="62" rx="8" fill="#ffffff" stroke="#1d4ed8" stroke-width="1.6"/>
+  <text x="248" y="443" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">Validar Sessão, CSRF</text>
+  <text x="248" y="459" text-anchor="middle" font-size="10.5" fill="#475569">e Permissões (RBAC)</text>
+
+  <rect x="374" y="416" width="164" height="62" rx="8" fill="#ffffff" stroke="#1d4ed8" stroke-width="1.6"/>
+  <text x="456" y="443" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">Criptografia de Senha</text>
+  <text x="456" y="459" text-anchor="middle" font-size="10.5" fill="#475569">(Pepper + Hash + Salt)</text>
+
+  <rect x="582" y="416" width="174" height="62" rx="8" fill="#ffffff" stroke="#1d4ed8" stroke-width="1.6"/>
+  <text x="669" y="443" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">Executar SQL Seguro</text>
+  <text x="669" y="459" text-anchor="middle" font-size="10.5" fill="#475569">(Prepared Statements)</text>
+
+  <rect x="800" y="416" width="160" height="62" rx="8" fill="#ffffff" stroke="#1d4ed8" stroke-width="1.6"/>
+  <text x="880" y="443" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">Registrar Logs</text>
+  <text x="880" y="459" text-anchor="middle" font-size="10.5" fill="#475569">Operacionais</text>
+
+  <!-- Data Store: Banco PostgreSQL -->
+  <g transform="translate(644, 512)">
+    <path d="M 0 8 L 0 36 A 25 8 0 0 0 50 36 L 50 8" fill="#ffffff" stroke="#334155" stroke-width="1.6"/>
+    <ellipse cx="25" cy="8" rx="25" ry="8" fill="#f1f5f9" stroke="#334155" stroke-width="1.6"/>
   </g>
-  <use href="#icoUser" x="192" y="128"/>
-  <text x="252" y="152" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">Cadastrar ou</text>
-  <text x="252" y="168" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">Fazer Login</text>
-
-  <!-- U2: Buscar catalogo / Google Books -->
-  <g filter="url(#cardShadow)">
-    <rect x="356" y="121" width="146" height="68" rx="8" fill="#ffffff" stroke="#163f35" stroke-width="1.6"/>
-  </g>
-  <use href="#icoUser" x="364" y="128"/>
-  <text x="429" y="152" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">Buscar livro no</text>
-  <text x="429" y="168" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">Catálogo / Google</text>
-
-  <!-- U3: Solicitar emprestimo -->
-  <g filter="url(#cardShadow)">
-    <rect x="538" y="121" width="146" height="68" rx="8" fill="#ffffff" stroke="#163f35" stroke-width="1.6"/>
-  </g>
-  <use href="#icoUser" x="546" y="128"/>
-  <text x="611" y="152" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">Solicitar empréstimo</text>
-  <text x="611" y="168" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">ou cancelar pedido</text>
-
-  <!-- U4: Retirar e devolver livro -->
-  <g filter="url(#cardShadow)">
-    <rect x="936" y="121" width="152" height="68" rx="8" fill="#ffffff" stroke="#163f35" stroke-width="1.6"/>
-  </g>
-  <use href="#icoUser" x="944" y="128"/>
-  <text x="1012" y="152" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">Acompanhar estante</text>
-  <text x="1012" y="168" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">e devolver livro</text>
-
-  <!-- End Event (Encerramento) -->
-  <circle cx="1196" cy="155" r="18" fill="#fee2e2" stroke="#b91c1c" stroke-width="4"/>
-  <text x="1196" y="190" text-anchor="middle" font-size="11.5" font-weight="600" fill="#991b1b">Fim</text>
-
-  <!-- ================= LANE 2 ELEMENTS (BIBLIOTECARIO) ================= -->
-  <!-- Gateway: Acao do Bibliotecario -->
-  <polygon points="598,316 622,340 598,364 574,340" fill="#fef3c7" stroke="#b45309" stroke-width="1.8"/>
-  <text x="598" y="346" text-anchor="middle" font-size="18" font-weight="700" fill="#92400e">X</text>
-
-  <!-- B1: Analisar solicitacao -->
-  <g filter="url(#cardShadow)">
-    <rect x="664" y="262" width="148" height="64" rx="8" fill="#ffffff" stroke="#b45309" stroke-width="1.6"/>
-  </g>
-  <use href="#icoUser" x="672" y="269"/>
-  <text x="738" y="291" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">Analisar pedido</text>
-  <text x="738" y="307" text-anchor="middle" font-size="11.5" fill="#64748b">(Aprovar / Recusar)</text>
-
-  <!-- Gateway: Aprovado? -->
-  <polygon points="866,270 890,294 866,318 842,294" fill="#fef3c7" stroke="#b45309" stroke-width="1.8"/>
-  <text x="866" y="300" text-anchor="middle" font-size="18" font-weight="700" fill="#92400e">X</text>
-  <text x="866" y="261" text-anchor="middle" font-size="10.5" font-weight="600" fill="#92400e">Aprovado?</text>
-
-  <!-- B2: Registrar retirada/devolucao -->
-  <g filter="url(#cardShadow)">
-    <rect x="936" y="262" width="152" height="64" rx="8" fill="#ffffff" stroke="#b45309" stroke-width="1.6"/>
-  </g>
-  <use href="#icoUser" x="944" y="269"/>
-  <text x="1012" y="291" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">Confirmar retirada</text>
-  <text x="1012" y="307" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">e devolução</text>
-
-  <!-- B3: Gerenciar acervo -->
-  <g filter="url(#cardShadow)">
-    <rect x="664" y="358" width="218" height="62" rx="8" fill="#ffffff" stroke="#b45309" stroke-width="1.6"/>
-  </g>
-  <use href="#icoUser" x="672" y="365"/>
-  <text x="773" y="386" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">Gerenciar acervo no Painel</text>
-  <text x="773" y="402" text-anchor="middle" font-size="11.2" fill="#64748b">(Cadastrar, Editar ou Excluir livro)</text>
-
-  <!-- End Event (Recusado / Acervo atualizado) -->
-  <circle cx="1196" cy="389" r="18" fill="#fee2e2" stroke="#b91c1c" stroke-width="4"/>
-  <text x="1196" y="422" text-anchor="middle" font-size="11" font-weight="600" fill="#991b1b">Encerrado</text>
-
-  <!-- ================= LANE 3 ELEMENTS (API LARAVEL BFF) ================= -->
-  <!-- S1: Autenticar (Pepper + CSRF + HttpOnly) -->
-  <g filter="url(#cardShadow)">
-    <rect x="174" y="468" width="176" height="72" rx="8" fill="#ffffff" stroke="#1d4ed8" stroke-width="1.6"/>
-  </g>
-  <use href="#icoService" x="182" y="475"/>
-  <text x="262" y="494" text-anchor="middle" font-size="11.8" font-weight="600" fill="#1e293b">Aplicar Pepper (HMAC),</text>
-  <text x="262" y="510" text-anchor="middle" font-size="11.8" font-weight="600" fill="#1e293b">validar CSRF e criar</text>
-  <text x="262" y="526" text-anchor="middle" font-size="11.2" fill="#475569">Sessão HttpOnly</text>
-
-  <!-- S2: Validar perfil (RBAC) + Cache -->
-  <g filter="url(#cardShadow)">
-    <rect x="386" y="468" width="166" height="72" rx="8" fill="#ffffff" stroke="#1d4ed8" stroke-width="1.6"/>
-  </g>
-  <use href="#icoService" x="394" y="475"/>
-  <text x="469" y="496" text-anchor="middle" font-size="11.8" font-weight="600" fill="#1e293b">Validar Permissão</text>
-  <text x="469" y="512" text-anchor="middle" font-size="11.2" fill="#475569">(Cliente / Bibliotecário)</text>
-  <text x="469" y="527" text-anchor="middle" font-size="11" fill="#475569">e consultar cache</text>
-
-  <!-- S3: Prepared Statements + Triggers -->
-  <g filter="url(#cardShadow)">
-    <rect x="664" y="468" width="218" height="72" rx="8" fill="#ffffff" stroke="#1d4ed8" stroke-width="1.6"/>
-  </g>
-  <use href="#icoService" x="672" y="475"/>
-  <text x="773" y="496" text-anchor="middle" font-size="11.8" font-weight="600" fill="#1e293b">Executar transação SQL</text>
-  <text x="773" y="512" text-anchor="middle" font-size="11.2" fill="#475569">(Prepared Statements +</text>
-  <text x="773" y="527" text-anchor="middle" font-size="11.2" fill="#475569">Triggers de Estoque / RLS)</text>
-
-  <!-- S4: Registrar Logs -->
-  <g filter="url(#cardShadow)">
-    <rect x="936" y="468" width="168" height="72" rx="8" fill="#ffffff" stroke="#1d4ed8" stroke-width="1.6"/>
-  </g>
-  <use href="#icoService" x="944" y="475"/>
-  <text x="1020" y="501" text-anchor="middle" font-size="11.8" font-weight="600" fill="#1e293b">Registrar Logs</text>
-  <text x="1020" y="517" text-anchor="middle" font-size="11.2" fill="#475569">Operacionais (Auditoria)</text>
-
-  <!-- Data Store: PostgreSQL -->
-  <g transform="translate(747, 570)">
-    <path d="M 0 8 L 0 38 A 26 8 0 0 0 52 38 L 52 8" fill="#ffffff" stroke="#334155" stroke-width="1.6"/>
-    <ellipse cx="26" cy="8" rx="26" ry="8" fill="#f1f5f9" stroke="#334155" stroke-width="1.6"/>
-    <path d="M 0 18 A 26 8 0 0 0 52 18" fill="none" stroke="#334155" stroke-width="1.1"/>
-  </g>
-  <text x="773" y="636" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">PostgreSQL / Supabase</text>
+  <text x="669" y="576" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">PostgreSQL / Supabase</text>
 
   <!-- Data Object: Logs -->
-  <g transform="translate(1002, 570)">
-    <path d="M 0 0 L 24 0 L 35 11 L 35 44 L 0 44 Z" fill="#ffffff" stroke="#334155" stroke-width="1.6"/>
-    <polyline points="24,0 24,11 35,11" fill="none" stroke="#334155" stroke-width="1.4"/>
+  <g transform="translate(862, 512)">
+    <path d="M 0 0 L 24 0 L 34 10 L 34 42 L 0 42 Z" fill="#ffffff" stroke="#334155" stroke-width="1.6"/>
+    <polyline points="24,0 24,10 34,10" fill="none" stroke="#334155" stroke-width="1.4"/>
   </g>
-  <text x="1020" y="636" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">Logs de Auditoria</text>
+  <text x="880" y="576" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">Logs de Auditoria</text>
 
-  <!-- ================= SEQUENCE FLOWS (INSIDE POOL) ================= -->
-  <!-- Start -> U1 -->
-  <line x1="150" y1="155" x2="184" y2="155" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
-  <!-- U1 -> S1 (crosses lane cleanly) -->
-  <line x1="252" y1="189" x2="252" y2="468" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
-  <!-- S1 -> S2 -->
-  <line x1="350" y1="504" x2="386" y2="504" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
-  <!-- S2 -> U2 (returns authenticated user to catalog) -->
-  <line x1="429" y1="468" x2="429" y2="189" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
-  <!-- U2 -> U3 -->
-  <line x1="502" y1="155" x2="538" y2="155" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
-  <!-- U3 -> Gateway in Lane 2 -->
-  <polyline points="598,189 598,316" fill="none" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
-  <!-- S2 -> Gateway in Lane 2 (Admin direct entry) -->
-  <polyline points="510,468 510,340 574,340" fill="none" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
+  <!-- Lane 3 Arrows -->
+  <line x1="236" y1="157" x2="236" y2="416" stroke="#1e293b" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+  <line x1="330" y1="447" x2="374" y2="447" stroke="#1e293b" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <line x1="538" y1="447" x2="582" y2="447" stroke="#1e293b" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <line x1="756" y1="447" x2="800" y2="447" stroke="#1e293b" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <line x1="748" y1="362" x2="748" y2="416" stroke="#1e293b" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
 
-  <!-- Gateway -> B1 (Analisar) -->
-  <polyline points="598,316 598,294 664,294" fill="none" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
-  <!-- Gateway -> B3 (Gerenciar acervo) -->
-  <polyline points="598,364 598,389 664,389" fill="none" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
-
-  <!-- B1 -> Gateway Aprovado? -->
-  <line x1="812" y1="294" x2="842" y2="294" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
-  <!-- Aprovado? Sim -> B2 -->
-  <line x1="890" y1="294" x2="936" y2="294" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
-  <text x="912" y="286" text-anchor="middle" font-size="10.5" font-weight="700" fill="#15803d">Sim</text>
-  <!-- Aprovado? Nao -> Encerrado -->
-  <polyline points="866,318 866,342 1144,342 1144,389 1176,389" fill="none" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
-  <text x="908" y="336" text-anchor="middle" font-size="10.5" font-weight="700" fill="#b91c1c">Não</text>
-
-  <!-- B3 -> S3 (Acervo grava SQL) -->
-  <line x1="773" y1="420" x2="773" y2="468" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
-  <!-- B2 -> S3 / S4 -->
-  <line x1="1012" y1="326" x2="1012" y2="468" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
-  <!-- S3 -> S4 -->
-  <line x1="882" y1="504" x2="936" y2="504" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
-  <!-- B2 -> U4 (Leitor acompanha e devolve) -->
-  <line x1="1012" y1="262" x2="1012" y2="189" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
-  <!-- U4 -> Fim -->
-  <line x1="1088" y1="155" x2="1176" y2="155" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
-  <!-- End Event Lane 3 -->
-  <circle cx="1196" cy="504" r="18" fill="#fee2e2" stroke="#b91c1c" stroke-width="4"/>
-  <text x="1196" y="538" text-anchor="middle" font-size="11" font-weight="600" fill="#991b1b">Fim</text>
-
-  <!-- S4 -> End Event Lane 3 -->
-  <line x1="1104" y1="504" x2="1176" y2="504" stroke="#2b3a34" stroke-width="1.6" marker-end="url(#seq)"/>
-
-  <!-- ================= DATA ASSOCIATIONS (DOTTED) ================= -->
-  <line x1="773" y1="540" x2="773" y2="568" stroke="#475569" stroke-width="1.4" stroke-dasharray="3,3" marker-start="url(#dataV)" marker-end="url(#dataV)"/>
-  <line x1="1020" y1="540" x2="1020" y2="568" stroke="#475569" stroke-width="1.4" stroke-dasharray="3,3" marker-end="url(#dataV)"/>
-
-  <!-- ================= MESSAGE FLOWS TO EXTERNAL POOL (DASHED) ================= -->
-  <!-- S1 <-> Supabase Auth -->
-  <line x1="262" y1="540" x2="262" y2="682" stroke="#475569" stroke-width="1.5" stroke-dasharray="6,4" marker-start="url(#msgStart)" marker-end="url(#msgEnd)"/>
-  <text x="270" y="669" font-size="10" fill="#475569">Auth / JWT</text>
-  <!-- S2 <-> Google Books / Auth verify -->
-  <line x1="469" y1="540" x2="469" y2="682" stroke="#475569" stroke-width="1.5" stroke-dasharray="6,4" marker-start="url(#msgStart)" marker-end="url(#msgEnd)"/>
-  <text x="477" y="669" font-size="10" fill="#475569">Google Books / Token</text>
+  <!-- Data Associations -->
+  <line x1="669" y1="478" x2="669" y2="510" stroke="#475569" stroke-width="1.4" stroke-dasharray="3,3" marker-start="url(#dotArrow)" marker-end="url(#dotArrow)"/>
+  <line x1="880" y1="478" x2="880" y2="510" stroke="#475569" stroke-width="1.4" stroke-dasharray="3,3" marker-end="url(#dotArrow)"/>
 </svg>
