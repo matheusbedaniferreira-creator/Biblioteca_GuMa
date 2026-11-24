@@ -1,53 +1,64 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import {
+  createAgedMetalTextures,
+  createDragonScaleTextures,
+  createFabricTextures,
+  createSoftGlowTexture,
+  createStoneTextures,
+  createWingMembraneTextures,
+  createWoodTextures,
+} from '../three/proceduralTextures';
+import { buildProceduralWizard } from '../three/buildWizard';
+import { buildProceduralDragon } from '../three/buildDragon';
+import { buildArcaneEnvironment } from '../three/buildEnvironment';
 
-function createWing(wingMat, boneMat, hornMat, side) {
-  const wing = new THREE.Group();
-  const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.04, 0.95, 8), boneMat);
-  arm.rotation.z = side * -0.95;
-  arm.position.set(side * 0.42, 0.25, 0);
-  wing.add(arm);
-
-  const claw = new THREE.Mesh(new THREE.ConeGeometry(0.04, 0.16, 6), hornMat);
-  claw.position.set(side * 0.84, 0.56, 0.02);
-  claw.rotation.z = side * -0.35;
-  wing.add(claw);
-
-  const shape = new THREE.Shape();
-  shape.moveTo(0, 0);
-  shape.lineTo(side * 0.85, 0.56);
-  shape.lineTo(side * 1.95, 0.72);
-  shape.lineTo(side * 1.68, 0.14);
-  shape.lineTo(side * 1.32, -0.34);
-  shape.lineTo(side * 0.85, -0.18);
-  shape.lineTo(side * 0.42, -0.42);
-  shape.closePath();
-
-  const membrane = new THREE.Mesh(new THREE.ShapeGeometry(shape), wingMat);
-  membrane.position.z = -0.02;
-  wing.add(membrane);
-
-  const ribs = [
-    [side * 0.85, 0.56, side * 1.95, 0.72],
-    [side * 0.85, 0.56, side * 1.68, 0.14],
-    [side * 0.85, 0.56, side * 1.32, -0.34],
-  ];
-  ribs.forEach(([x1, y1, x2, y2]) => {
-    const dx = x2 - x1;
-    const dy = y2 - y1;
-    const len = Math.hypot(dx, dy);
-    const rib = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.01, len, 6), boneMat);
-    rib.position.set((x1 + x2) / 2, (y1 + y2) / 2, 0);
-    rib.rotation.z = Math.atan2(dy, dx) - Math.PI / 2;
-    wing.add(rib);
-  });
-
-  return wing;
-}
+/**
+ * Configurações centralizadas da cena 3D de Mago e Dragão.
+ * Para substituir pelas suas próprias malhas .glb/.gltf, preencha wizardUrl ou dragonUrl.
+ */
+export const SCENE_CONFIG = {
+  mouseParallax: 0.42,
+  lookAtStrength: 1.0,
+  magicColor: 0x4fd1c5,
+  fireColor: 0xff8433,
+  accentColor: 0xe2bd7d,
+  bloom: {
+    threshold: 0.85,
+    strength: 0.56,
+    radius: 0.42,
+  },
+  wizard: {
+    position: [-0.35, -1.62, 0.35],
+    scale: 0.92,
+  },
+  dragon: {
+    position: [2.15, 0.28, -0.55],
+    scale: 0.96,
+  },
+  models: {
+    wizardUrl: '',
+    dragonUrl: '',
+  },
+};
 
 export default function HeroDragon3D() {
   const containerRef = useRef(null);
   const [webglUnavailable, setWebglUnavailable] = useState(false);
+  const [controlsOpen, setControlsOpen] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const [lowPower, setLowPower] = useState(false);
+  const [veilLevel, setVeilLevel] = useState('normal'); // 'soft' | 'normal' | 'strong'
+
+  const stateRef = useRef({ paused: false, lowPower: false });
+  stateRef.current.paused = paused;
+  stateRef.current.lowPower = lowPower;
 
   useEffect(() => {
     const container = containerRef.current;
@@ -60,151 +71,178 @@ export default function HeroDragon3D() {
 
     let renderer;
     try {
-      renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'low-power' });
+      renderer = new THREE.WebGLRenderer({
+        alpha: false,
+        antialias: true,
+        powerPreference: 'high-performance',
+      });
     } catch {
       setWebglUnavailable(true);
       return undefined;
     }
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.08;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    renderer.setClearColor(0x000000, 0);
     container.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 50);
-    camera.position.set(0, 0.35, 6.2);
+    scene.fog = new THREE.FogExp2(0x112923, 0.048);
 
-    // Lighting
-    scene.add(new THREE.AmbientLight(0xdbe7dc, 1.35));
-    const keyLight = new THREE.DirectionalLight(0xfff4dc, 2.2);
-    keyLight.position.set(3.5, 4.5, 5);
+    const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 60);
+    const baseCamPos = new THREE.Vector3(0.45, 0.25, 6.85);
+    const camLookTarget = new THREE.Vector3(0.65, -0.1, -0.2);
+    camera.position.copy(baseCamPos);
+    camera.lookAt(camLookTarget);
+
+    // Environment Map procedural (reflexos realistas em metais, olhos e escamas)
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    const roomEnv = new RoomEnvironment();
+    const envTarget = pmrem.fromScene(roomEnv, 0.04);
+    scene.environment = envTarget.texture;
+    scene.environmentIntensity = 0.72;
+    roomEnv.dispose();
+
+    // Iluminação cinematográfica 3 pontos + atmosfera
+    const hemiLight = new THREE.HemisphereLight(0x9ec7bc, 0x15251f, 0.65);
+    scene.add(hemiLight);
+
+    const keyLight = new THREE.DirectionalLight(0xffe9c8, 2.35);
+    keyLight.position.set(4.5, 6.2, 4.8);
+    keyLight.castShadow = true;
+    keyLight.shadow.mapSize.set(1024, 1024);
+    keyLight.shadow.camera.near = 1;
+    keyLight.shadow.camera.far = 20;
+    keyLight.shadow.camera.left = -5.5;
+    keyLight.shadow.camera.right = 5.5;
+    keyLight.shadow.camera.top = 4.5;
+    keyLight.shadow.camera.bottom = -4.5;
+    keyLight.shadow.bias = -0.0005;
+    keyLight.shadow.normalBias = 0.035;
     scene.add(keyLight);
 
-    const rimLight = new THREE.DirectionalLight(0x93c5ab, 1.4);
-    rimLight.position.set(-4, 2, -2);
+    const fillLight = new THREE.DirectionalLight(0x5da9b8, 0.95);
+    fillLight.position.set(-5.5, 2.2, 3.2);
+    scene.add(fillLight);
+
+    const rimLight = new THREE.DirectionalLight(0xf6c989, 1.85);
+    rimLight.position.set(-2.2, 4.5, -5.2);
     scene.add(rimLight);
 
-    // Materials
-    const scaleMat = new THREE.MeshStandardMaterial({ color: 0x1e4d3f, roughness: 0.44, metalness: 0.18 });
-    const boneMat = new THREE.MeshStandardMaterial({ color: 0x15392e, roughness: 0.52, metalness: 0.15 });
-    const bellyMat = new THREE.MeshStandardMaterial({ color: 0xc9a063, roughness: 0.38, metalness: 0.28 });
-    const hornMat = new THREE.MeshStandardMaterial({ color: 0xe6cfa4, roughness: 0.32, metalness: 0.35 });
-    const wingMat = new THREE.MeshStandardMaterial({
-      color: 0x2a6553,
-      roughness: 0.55,
-      metalness: 0.1,
-      transparent: true,
-      opacity: 0.78,
-      side: THREE.DoubleSide,
+    // Texturas PBR procedurais
+    const textures = {
+      scales: createDragonScaleTextures(),
+      wing: createWingMembraneTextures(),
+      fabric: createFabricTextures(),
+      metal: createAgedMetalTextures(),
+      wood: createWoodTextures(),
+      stone: createStoneTextures(),
+      glow: createSoftGlowTexture(),
+    };
+
+    // Ambiente (céu GLSL, penhasco, ruínas, névoa, partículas e sistema de pulso)
+    const environment = buildArcaneEnvironment({
+      textures,
+      magicColor: SCENE_CONFIG.magicColor,
+      emberColor: SCENE_CONFIG.fireColor,
     });
-    const eyeMat = new THREE.MeshStandardMaterial({
-      color: 0xfde047,
-      emissive: 0xf59e0b,
-      emissiveIntensity: 1.4,
-      roughness: 0.2,
+    scene.add(environment.group);
+
+    // Mago e Dragão procedurais (ativos imediatamente, sem depender de assets externos)
+    const wizard = buildProceduralWizard({
+      textures,
+      magicColor: SCENE_CONFIG.magicColor,
+      accentColor: SCENE_CONFIG.accentColor,
     });
+    wizard.root.position.set(...SCENE_CONFIG.wizard.position);
+    wizard.root.scale.setScalar(SCENE_CONFIG.wizard.scale);
+    wizard.root.rotation.y = 0.42;
+    scene.add(wizard.root);
 
-    const dragonRoot = new THREE.Group();
-    dragonRoot.rotation.y = -0.35;
-    scene.add(dragonRoot);
+    const dragon = buildProceduralDragon({
+      textures,
+      fireColor: SCENE_CONFIG.fireColor,
+    });
+    dragon.root.position.set(...SCENE_CONFIG.dragon.position);
+    dragon.root.scale.setScalar(SCENE_CONFIG.dragon.scale);
+    dragon.root.rotation.y = -0.68;
+    scene.add(dragon.root);
 
-    // Torso
-    const torso = new THREE.Mesh(new THREE.SphereGeometry(0.62, 18, 14), scaleMat);
-    torso.scale.set(0.85, 0.78, 1.38);
-    dragonRoot.add(torso);
-
-    const chest = new THREE.Mesh(new THREE.SphereGeometry(0.46, 16, 12), bellyMat);
-    chest.scale.set(0.72, 0.65, 1.15);
-    chest.position.set(0, -0.14, 0.12);
-    dragonRoot.add(chest);
-
-    for (let i = 0; i < 4; i += 1) {
-      const spine = new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.24, 5), hornMat);
-      spine.position.set(0, 0.52 - i * 0.04, 0.42 - i * 0.32);
-      spine.rotation.x = -0.35;
-      dragonRoot.add(spine);
+    // Suporte opcional para carregar modelos .glb/.gltf externos caso configurados
+    const gltfLoader = new GLTFLoader();
+    if (SCENE_CONFIG.models.wizardUrl) {
+      gltfLoader.load(
+        SCENE_CONFIG.models.wizardUrl,
+        (gltf) => {
+          gltf.scene.position.copy(wizard.root.position);
+          gltf.scene.scale.copy(wizard.root.scale);
+          gltf.scene.rotation.copy(wizard.root.rotation);
+          scene.remove(wizard.root);
+          scene.add(gltf.scene);
+        },
+        undefined,
+        () => {
+          // Mantém o mago procedural em caso de erro no carregamento externo
+        },
+      );
+    }
+    if (SCENE_CONFIG.models.dragonUrl) {
+      gltfLoader.load(
+        SCENE_CONFIG.models.dragonUrl,
+        (gltf) => {
+          gltf.scene.position.copy(dragon.root.position);
+          gltf.scene.scale.copy(dragon.root.scale);
+          gltf.scene.rotation.copy(dragon.root.rotation);
+          scene.remove(dragon.root);
+          scene.add(gltf.scene);
+        },
+        undefined,
+        () => {
+          // Mantém o dragão procedural em caso de erro no carregamento externo
+        },
+      );
     }
 
-    // Neck & Head
-    const neckPivot = new THREE.Group();
-    neckPivot.position.set(0, 0.28, 0.66);
-    dragonRoot.add(neckPivot);
+    // Pós-processamento seletivo (UnrealBloomPass + OutputPass)
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    const bloomPass = new UnrealBloomPass(
+      new THREE.Vector2(1, 1),
+      SCENE_CONFIG.bloom.strength,
+      SCENE_CONFIG.bloom.radius,
+      SCENE_CONFIG.bloom.threshold,
+    );
+    composer.addPass(bloomPass);
+    composer.addPass(new OutputPass());
 
-    const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.3, 0.72, 12), scaleMat);
-    neck.position.set(0, 0.32, 0.14);
-    neck.rotation.x = 0.42;
-    neckPivot.add(neck);
-
-    const headPivot = new THREE.Group();
-    headPivot.position.set(0, 0.66, 0.28);
-    neckPivot.add(headPivot);
-
-    const skull = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.34, 0.56), scaleMat);
-    skull.position.set(0, 0.04, 0.14);
-    headPivot.add(skull);
-
-    const snout = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.2, 0.46), scaleMat);
-    snout.position.set(0, 0.01, 0.52);
-    headPivot.add(snout);
-
-    const jaw = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.1, 0.4), boneMat);
-    jaw.position.set(0, -0.12, 0.48);
-    jaw.rotation.x = 0.12;
-    headPivot.add(jaw);
-
-    [-1, 1].forEach((side) => {
-      const horn = new THREE.Mesh(new THREE.ConeGeometry(0.065, 0.58, 7), hornMat);
-      horn.position.set(side * 0.16, 0.3, -0.14);
-      horn.rotation.x = -0.78;
-      horn.rotation.z = side * -0.22;
-      headPivot.add(horn);
-
-      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.052, 10, 10), eyeMat);
-      eye.position.set(side * 0.2, 0.1, 0.32);
-      headPivot.add(eye);
-    });
-
-    // Wings
-    const leftWing = createWing(wingMat, boneMat, hornMat, -1);
-    leftWing.position.set(-0.28, 0.28, 0.1);
-    leftWing.rotation.y = 0.25;
-    dragonRoot.add(leftWing);
-
-    const rightWing = createWing(wingMat, boneMat, hornMat, 1);
-    rightWing.position.set(0.28, 0.28, 0.1);
-    rightWing.rotation.y = -0.25;
-    dragonRoot.add(rightWing);
-
-    // Tail
-    const tailSegments = [];
-    let parentGroup = dragonRoot;
-    for (let i = 0; i < 5; i += 1) {
-      const segPivot = new THREE.Group();
-      segPivot.position.set(0, i === 0 ? -0.05 : 0, i === 0 ? -0.78 : -0.36);
-      const radius = 0.22 - i * 0.036;
-      const seg = new THREE.Mesh(new THREE.CylinderGeometry(radius * 0.78, radius, 0.42, 10), scaleMat);
-      seg.rotation.x = Math.PI / 2;
-      seg.position.z = -0.18;
-      segPivot.add(seg);
-      parentGroup.add(segPivot);
-      tailSegments.push(segPivot);
-      parentGroup = segPivot;
-    }
-
+    // Responsividade do canvas limitada à primeira seção (.hero)
     const updateSize = () => {
-      const w = container.clientWidth || 1;
-      const h = container.clientHeight || 1;
+      const w = Math.max(container.clientWidth, 1);
+      const h = Math.max(container.clientHeight, 1);
+      const dpr = stateRef.current.lowPower ? 1 : Math.min(window.devicePixelRatio || 1, 2);
+      renderer.setPixelRatio(dpr);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h, false);
+      composer.setSize(w, h);
+      bloomPass.resolution.set(w, h);
 
-      if (w < 680) {
-        dragonRoot.position.set(0.4, -0.2, 0);
-        dragonRoot.scale.setScalar(0.72);
+      if (w < 720) {
+        wizard.root.position.set(-0.95, -1.7, 0.1);
+        wizard.root.scale.setScalar(0.72);
+        dragon.root.position.set(0.85, 0.45, -1.1);
+        dragon.root.scale.setScalar(0.72);
+        baseCamPos.set(0, 0.35, 7.6);
       } else {
-        dragonRoot.position.set(1.65, -0.05, 0);
-        dragonRoot.scale.setScalar(1.0);
+        wizard.root.position.set(...SCENE_CONFIG.wizard.position);
+        wizard.root.scale.setScalar(SCENE_CONFIG.wizard.scale);
+        dragon.root.position.set(...SCENE_CONFIG.dragon.position);
+        dragon.root.scale.setScalar(SCENE_CONFIG.dragon.scale);
+        baseCamPos.set(0.45, 0.25, 6.85);
       }
     };
 
@@ -212,64 +250,191 @@ export default function HeroDragon3D() {
     const ro = new ResizeObserver(updateSize);
     ro.observe(container);
 
-    const target = { x: 0, y: 0 };
-    const current = { x: 0, y: 0 };
+    // Captura global não-invasiva de ponteiro (sem bloquear cliques ou rolagem)
+    const pointerTarget = { x: 0, y: 0 };
+    const pointerSmooth = { x: 0, y: 0 };
+    let pointerInside = false;
+    let spellImpulse = 0;
+
+    const raycaster = new THREE.Raycaster();
+    const interactionPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0.2);
+    const cursorWorld = new THREE.Vector3(0.8, 0.1, -0.2);
+    const ndcVec = new THREE.Vector2();
+
+    const updateCursorWorld = (nx, ny) => {
+      ndcVec.set(nx, -ny);
+      raycaster.setFromCamera(ndcVec, camera);
+      raycaster.ray.intersectPlane(interactionPlane, cursorWorld);
+    };
 
     const onPointerMove = (e) => {
       const rect = container.getBoundingClientRect();
       if (!rect.width || !rect.height) return;
-      const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      const ny = ((e.clientY - rect.top) / rect.height) * 2 - 1;
-      target.x = THREE.MathUtils.clamp(nx, -1, 1);
-      target.y = THREE.MathUtils.clamp(ny, -1, 1);
+      const inVert = e.clientY >= rect.top - 120 && e.clientY <= rect.bottom + 120;
+      pointerInside = inVert;
+      const nx = THREE.MathUtils.clamp(((e.clientX - rect.left) / rect.width) * 2 - 1, -1, 1);
+      const ny = THREE.MathUtils.clamp(((e.clientY - rect.top) / rect.height) * 2 - 1, -1, 1);
+      pointerTarget.x = nx;
+      pointerTarget.y = ny;
+      updateCursorWorld(nx, ny);
     };
 
+    const onPointerDown = (e) => {
+      if (stateRef.current.paused || reducedMotion) return;
+      // Não dispara efeitos ao clicar em links, botões, inputs ou controles
+      if (e.target instanceof Element && e.target.closest('a,button,input,textarea,select,label,.scene-controls')) {
+        return;
+      }
+      const rect = container.getBoundingClientRect();
+      if (e.clientY < rect.top || e.clientY > rect.bottom) return;
+      const nx = THREE.MathUtils.clamp(((e.clientX - rect.left) / rect.width) * 2 - 1, -1, 1);
+      const ny = THREE.MathUtils.clamp(((e.clientY - rect.top) / rect.height) * 2 - 1, -1, 1);
+      updateCursorWorld(nx, ny);
+
+      spellImpulse = 1.0;
+      const wizardOrigin = new THREE.Vector3();
+      const dragonOrigin = new THREE.Vector3();
+      wizard.rig.crystal.getWorldPosition(wizardOrigin);
+      dragon.rig.jawPivot.getWorldPosition(dragonOrigin);
+      environment.triggerSpellBurst(wizardOrigin, dragonOrigin, cursorWorld);
+    };
+
+    const onPointerLeave = () => {
+      pointerInside = false;
+      pointerTarget.x = 0;
+      pointerTarget.y = 0;
+    };
+
+    const onContextLost = (e) => {
+      e.preventDefault();
+      setWebglUnavailable(true);
+    };
+
+    renderer.domElement.addEventListener('webglcontextlost', onContextLost, false);
+
     if (reducedMotion) {
-      renderer.render(scene, camera);
+      composer.render();
       return () => {
         ro.disconnect();
+        renderer.domElement.removeEventListener('webglcontextlost', onContextLost);
+        envTarget.dispose();
+        pmrem.dispose();
+        composer.dispose();
         if (renderer.domElement.parentNode === container) container.removeChild(renderer.domElement);
         renderer.dispose();
       };
     }
 
     window.addEventListener('pointermove', onPointerMove, { passive: true });
+    window.addEventListener('pointerdown', onPointerDown, { passive: true });
+    document.addEventListener('mouseleave', onPointerLeave);
+    window.addEventListener('blur', onPointerLeave);
+
     let rafId = 0;
+    let elapsed = 0;
     const clock = new THREE.Clock();
 
     const animate = () => {
       rafId = requestAnimationFrame(animate);
-      const t = clock.getElapsedTime();
+      const dt = Math.min(clock.getDelta(), 0.05);
+      if (stateRef.current.paused) return;
 
-      current.x += (target.x - current.x) * 0.05;
-      current.y += (target.y - current.y) * 0.05;
+      elapsed += dt;
+      const damp = 1 - Math.exp(-dt * 4.5);
+      pointerSmooth.x += (pointerTarget.x - pointerSmooth.x) * damp;
+      pointerSmooth.y += (pointerTarget.y - pointerSmooth.y) * damp;
+      spellImpulse = Math.max(0, spellImpulse - dt * 1.35);
 
-      // Subtle breathing & cursor tracking
-      dragonRoot.position.y = (container.clientWidth < 680 ? -0.2 : -0.05) + Math.sin(t * 1.5) * 0.08;
-      dragonRoot.rotation.y = -0.35 + current.x * 0.14;
-      neckPivot.rotation.y = current.x * 0.25;
-      neckPivot.rotation.x = current.y * 0.14;
-      headPivot.rotation.y = current.x * 0.35;
-      headPivot.rotation.x = current.y * 0.22;
+      const lookK = SCENE_CONFIG.lookAtStrength;
 
-      // Subtle wing flap
-      const flap = Math.sin(t * 2.2) * 0.2;
-      leftWing.rotation.z = flap - 0.08;
-      rightWing.rotation.z = -flap + 0.08;
+      // 1. Câmera com paralaxe 3D suave
+      camera.position.x = baseCamPos.x + pointerSmooth.x * SCENE_CONFIG.mouseParallax;
+      camera.position.y = baseCamPos.y - pointerSmooth.y * (SCENE_CONFIG.mouseParallax * 0.55) + Math.sin(elapsed * 0.6) * 0.04;
+      camera.lookAt(camLookTarget);
 
-      // Tail sway
-      tailSegments.forEach((seg, idx) => {
-        seg.rotation.y = Math.sin(t * 1.6 - idx * 0.45) * 0.14;
+      // 2. Micro-animações e Look-At do Mago
+      const wRig = wizard.rig;
+      const breath = Math.sin(elapsed * 1.7);
+      wRig.torsoPivot.position.y = 1.18 + breath * 0.018;
+      wRig.torsoPivot.rotation.y = pointerSmooth.x * 0.16 * lookK;
+      wRig.headPivot.rotation.y = THREE.MathUtils.clamp(pointerSmooth.x * 0.36 * lookK, -0.45, 0.45);
+      wRig.headPivot.rotation.x = THREE.MathUtils.clamp(pointerSmooth.y * 0.22 * lookK, -0.28, 0.28);
+      wRig.beardPivot.rotation.x = Math.sin(elapsed * 2.1) * 0.04;
+      wRig.capePivot.rotation.x = 0.08 + Math.sin(elapsed * 1.4) * 0.055;
+
+      // Cajado e runas reagindo ao clique mágico
+      wRig.rightArmPivot.rotation.x = -spellImpulse * 0.34 + Math.sin(elapsed * 1.1) * 0.04;
+      wRig.leftArmPivot.rotation.x = -0.15 - spellImpulse * 0.28 + Math.cos(elapsed * 1.3) * 0.05;
+      wRig.crystal.rotation.y = elapsed * 1.4;
+      wRig.crystal.position.y = 0.14 + Math.sin(elapsed * 2.6) * 0.025;
+      wRig.runeRingA.rotation.z = elapsed * 1.1;
+      wRig.runeRingA.rotation.x = Math.sin(elapsed * 0.9) * 0.45;
+      wRig.runeRingB.rotation.y = -elapsed * 1.5;
+      wRig.handSigil.rotation.z = -elapsed * 1.6;
+      wRig.staffLight.intensity = 3.2 + Math.sin(elapsed * 3.5) * 0.45 + spellImpulse * 4.5;
+      wRig.crystalMat.emissiveIntensity = 2.6 + spellImpulse * 2.8;
+      wRig.runeMat.emissiveIntensity = 2.1 + spellImpulse * 2.2;
+
+      // 3. Animação orgânica e reação do Dragão
+      const dRig = dragon.rig;
+      const wingSpeed = 2.1 + spellImpulse * 2.4;
+      const flap = Math.sin(elapsed * wingSpeed);
+      dRig.bodyGroup.position.y = Math.sin(elapsed * 1.45) * 0.14 + spellImpulse * 0.16;
+      dRig.bodyGroup.rotation.z = Math.sin(elapsed * 1.1) * 0.03 - pointerSmooth.x * 0.05;
+
+      dRig.leftWing.shoulderPivot.rotation.z = flap * (0.28 + spellImpulse * 0.18) - 0.06;
+      dRig.leftWing.outerPivot.rotation.z = Math.sin(elapsed * wingSpeed - 0.55) * 0.22;
+      dRig.rightWing.shoulderPivot.rotation.z = -flap * (0.28 + spellImpulse * 0.18) + 0.06;
+      dRig.rightWing.outerPivot.rotation.z = -Math.sin(elapsed * wingSpeed - 0.55) * 0.22;
+
+      // Pescoço e cabeça acompanhando cursor com limites anatômicos
+      dRig.neckSegments.forEach((seg, i) => {
+        const w = (i + 1) / dRig.neckSegments.length;
+        seg.rotation.y = THREE.MathUtils.clamp(pointerSmooth.x * 0.11 * w * lookK, -0.18, 0.18);
+        seg.rotation.x = Math.sin(elapsed * 1.5 - i * 0.35) * 0.04 + pointerSmooth.y * 0.06 * w * lookK - spellImpulse * 0.07 * w;
+      });
+      dRig.headPivot.rotation.y = THREE.MathUtils.clamp(pointerSmooth.x * 0.34 * lookK, -0.45, 0.45);
+      dRig.headPivot.rotation.x = THREE.MathUtils.clamp(pointerSmooth.y * 0.22 * lookK - spellImpulse * 0.22, -0.35, 0.3);
+      dRig.jawPivot.rotation.x = 0.08 + Math.max(0, Math.sin(elapsed * 1.3)) * 0.08 + spellImpulse * 0.36;
+      dRig.throatMat.emissiveIntensity = 0.45 + spellImpulse * 3.4;
+      dRig.mouthLight.intensity = 0.4 + spellImpulse * 3.8;
+
+      // Cauda ondulando
+      dRig.tailSegments.forEach((seg, i) => {
+        seg.rotation.y = Math.sin(elapsed * 1.65 - i * 0.42) * 0.16;
+        seg.rotation.x = Math.cos(elapsed * 1.2 - i * 0.3) * 0.05;
       });
 
-      renderer.render(scene, camera);
+      // 4. Atmosfera, névoa, partículas e aura do cursor
+      environment.update(dt, elapsed, cursorWorld, pointerInside);
+
+      if (stateRef.current.lowPower) {
+        renderer.render(scene, camera);
+      } else {
+        composer.render();
+      }
     };
     animate();
 
     return () => {
       cancelAnimationFrame(rafId);
       window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('mouseleave', onPointerLeave);
+      window.removeEventListener('blur', onPointerLeave);
+      renderer.domElement.removeEventListener('webglcontextlost', onContextLost);
       ro.disconnect();
+
+      Object.values(textures).forEach((entry) => {
+        if (entry instanceof THREE.Texture) {
+          entry.dispose();
+        } else if (entry && typeof entry === 'object') {
+          Object.values(entry).forEach((t) => {
+            if (t && typeof t.dispose === 'function') t.dispose();
+          });
+        }
+      });
+
       scene.traverse((obj) => {
         if (obj.geometry) obj.geometry.dispose();
         if (obj.material) {
@@ -277,21 +442,59 @@ export default function HeroDragon3D() {
           else obj.material.dispose();
         }
       });
+
+      envTarget.dispose();
+      pmrem.dispose();
+      composer.dispose();
       if (renderer.domElement.parentNode === container) container.removeChild(renderer.domElement);
       renderer.dispose();
     };
   }, []);
 
+  // Reajusta DPR ao alternar modo leve
+  useEffect(() => {
+    window.dispatchEvent(new Event('resize'));
+  }, [lowPower]);
+
   if (webglUnavailable) {
     return (
       <div className="hero-dragon-layer hero-dragon-fallback" aria-hidden="true">
-        <svg viewBox="0 0 360 220" className="dragon-fallback-svg">
-          <path d="M120 155 C140 110, 190 95, 230 115 C250 125, 265 100, 290 88 C310 80, 325 88, 320 100 C305 106, 285 110, 270 135 C255 162, 225 180, 175 180 C140 180, 110 170, 120 155 Z" fill="#1e4d3f" opacity=".28"/>
-          <path d="M165 118 C135 58, 82 32, 34 44 C64 64, 78 90, 74 116 C100 104, 124 110, 140 128 Z" fill="#2a6553" opacity=".24"/>
-        </svg>
+        <div className="hero-veil veil-normal"/>
       </div>
     );
   }
 
-  return <div ref={containerRef} className="hero-dragon-layer" aria-hidden="true"/>;
+  return (
+    <>
+      <div ref={containerRef} className="hero-dragon-layer" aria-hidden="true"/>
+      <div className={`hero-veil veil-${veilLevel}`} aria-hidden="true"/>
+      <div className="scene-controls">
+        {controlsOpen && (
+          <div className="scene-controls-panel" role="group" aria-label="Controles do cenário 3D">
+            <button type="button" onClick={() => setPaused((v) => !v)}>
+              {paused ? 'Retomar' : 'Pausar'}
+            </button>
+            <button type="button" onClick={() => setLowPower((v) => !v)}>
+              {lowPower ? 'Qualidade: Alta' : 'Modo leve'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setVeilLevel((v) => (v === 'normal' ? 'strong' : v === 'strong' ? 'soft' : 'normal'))}
+            >
+              Contraste: {veilLevel === 'normal' ? 'Médio' : veilLevel === 'strong' ? 'Alto' : 'Suave'}
+            </button>
+          </div>
+        )}
+        <button
+          type="button"
+          className="scene-controls-toggle"
+          onClick={() => setControlsOpen((v) => !v)}
+          aria-expanded={controlsOpen}
+          title="Ajustar cena 3D"
+        >
+          3D
+        </button>
+      </div>
+    </>
+  );
 }
