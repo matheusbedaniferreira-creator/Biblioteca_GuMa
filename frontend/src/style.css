@@ -41,6 +41,10 @@
 @keyframes dragon-breathe{0%,100%{transform:rotate(0deg)}50%{transform:rotate(1.5deg) translateY(2px)}}
 @keyframes dragon-flame{0%,100%{transform:scaleX(.95) scaleY(.92);opacity:.9}50%{transform:scaleX(1.06) scaleY(1.08);opacity:1}}
 @keyframes ember-float{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(18px,-12px) scale(.4);opacity:0}}
+.hero{position:relative}.hero-grid{position:relative;z-index:2}
+.hero-dragon-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:1;opacity:.22;overflow:hidden}
+.hero-dragon-bg .dragon-svg{max-width:1040px;width:96%}
+.dragon-wing-back{transform-origin:292px 142px;animation:dragon-wing 3.4s ease-in-out .2s infinite}
 @media(max-width:900px){.hero-shelf{padding:12px 6px 14px;gap:10px}.shelf-book{height:210px;padding:9px 9px 9px 14px}.shelf-forest{height:236px}.shelf-terracotta{height:206px}.shelf-ochre{height:194px}.shelf-cover-inner{padding:10px 7px}.shelf-title{font-size:.96rem}.dragon-stage{padding:12px 12px 6px}}
 .footer-links{display:flex;align-items:center;gap:22px}
 .footer-links a:hover{color:#184539}
