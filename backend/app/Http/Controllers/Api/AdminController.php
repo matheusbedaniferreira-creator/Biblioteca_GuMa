@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Support\Catalog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -11,7 +12,7 @@ class AdminController
 {
     public function dashboard()
     {
-        return response()->json([
+        $data = Cache::remember('admin:dashboard:v'.Catalog::version(), 30, fn () => [
             'livros' => DB::table('livros')->count(),
             'exemplares_disponiveis' => (int) DB::table('livros')->sum('quantidade_disponivel'),
             'clientes' => DB::table('clientes')->count(),
@@ -20,24 +21,28 @@ class AdminController
             'emprestimos_atrasados' => DB::table('emprestimos')
                 ->where('status', 'EMPRESTADO')->whereDate('data_prevista_devolucao', '<', now('UTC')->toDateString())->count(),
         ]);
+        return response()->json($data);
     }
 
     public function authors()
     {
-        return response()->json(DB::table('autores')->orderBy('nome')->get());
+        $data = Cache::remember('admin:authors:v'.Catalog::version(), 60, fn () => DB::table('autores')->orderBy('nome')->get());
+        return response()->json($data);
     }
 
     public function createAuthor(Request $request)
     {
         $data = $request->validate(['nome' => 'required|string|max:100', 'nacionalidade' => 'nullable|string|max:50']);
         $id = DB::table('autores')->insertGetId($data, 'id_autor');
+        Catalog::bumpVersion();
         Log::info('Autor cadastrado', ['autor_id' => $id, 'bibliotecario_id' => $request->attributes->get('bibliotecario')?->id_bibliotecario]);
         return response()->json(DB::table('autores')->where('id_autor', $id)->first(), 201);
     }
 
     public function libraries()
     {
-        return response()->json(DB::table('bibliotecas')->orderBy('nome')->get());
+        $data = Cache::remember('admin:libraries:v'.Catalog::version(), 60, fn () => DB::table('bibliotecas')->orderBy('nome')->get());
+        return response()->json($data);
     }
 
     public function createLibrary(Request $request)
@@ -49,6 +54,7 @@ class AdminController
             'horario_fechamento' => 'required|date_format:H:i',
         ]);
         $id = DB::table('bibliotecas')->insertGetId($data, 'id_biblioteca');
+        Catalog::bumpVersion();
         Log::info('Biblioteca cadastrada', ['biblioteca_id' => $id, 'bibliotecario_id' => $request->attributes->get('bibliotecario')?->id_bibliotecario]);
         return response()->json(DB::table('bibliotecas')->where('id_biblioteca', $id)->first(), 201);
     }
@@ -78,14 +84,21 @@ class AdminController
             'page' => 'nullable|integer|min:1',
             'per_page' => 'nullable|integer|min:1|max:100',
         ]);
-        $query = Catalog::query();
-        if ($term = trim($data['q'] ?? '')) {
-            $safe = addcslashes($term, '\\%_');
-            $query->where(fn ($builder) => $builder
-                ->where('l.titulo', 'ilike', '%'.$safe.'%')
-                ->orWhere('a.nome', 'ilike', '%'.$safe.'%'));
-        }
-        return response()->json($query->orderBy('l.titulo')->paginate((int) ($data['per_page'] ?? 24)));
+        $term = trim($data['q'] ?? '');
+        $perPage = (int) ($data['per_page'] ?? 24);
+        $page = (int) ($data['page'] ?? 1);
+        $key = 'admin:books:v'.Catalog::version().':'.md5($term.'|'.$perPage.'|'.$page);
+        $result = Cache::remember($key, 30, function () use ($term, $perPage) {
+            $query = Catalog::query();
+            if ($term !== '') {
+                $safe = addcslashes($term, '\\%_');
+                $query->where(fn ($builder) => $builder
+                    ->where('l.titulo', 'ilike', '%'.$safe.'%')
+                    ->orWhere('a.nome', 'ilike', '%'.$safe.'%'));
+            }
+            return $query->orderBy('l.titulo')->paginate($perPage);
+        });
+        return response()->json($result);
     }
 
     public function createBook(Request $request)
@@ -123,24 +136,30 @@ class AdminController
 
     public function customers(Request $request)
     {
-        $q = DB::table('clientes')->select('id_cliente', 'nome', 'email', 'data_cadastro')->orderBy('nome');
-        if ($request->filled('q')) {
-            $term = addcslashes(mb_substr($request->query('q'), 0, 100), '\\%_');
-            $q->where(fn($query) => $query->where('nome', 'ilike', '%'.$term.'%')
-                ->orWhere('email', 'ilike', '%'.$term.'%'));
-        }
-        return response()->json($q->limit(100)->get());
+        $term = $request->filled('q') ? mb_substr($request->query('q'), 0, 100) : '';
+        $key = 'admin:customers:v'.Catalog::version().':'.md5($term);
+        $result = Cache::remember($key, 30, function () use ($term) {
+            $q = DB::table('clientes')->select('id_cliente', 'nome', 'email', 'data_cadastro')->orderBy('nome');
+            if ($term !== '') {
+                $safe = addcslashes($term, '\\%_');
+                $q->where(fn($query) => $query->where('nome', 'ilike', '%'.$safe.'%')
+                    ->orWhere('email', 'ilike', '%'.$safe.'%'));
+            }
+            return $q->limit(100)->get();
+        });
+        return response()->json($result);
     }
 
     public function requests()
     {
-        return response()->json(DB::table('solicitacoes as s')
+        $result = Cache::remember('admin:requests:v'.Catalog::version(), 30, fn () => DB::table('solicitacoes as s')
             ->join('clientes as c', 'c.id_cliente', '=', 's.id_cliente')
             ->join('livros as l', 'l.id_livro', '=', 's.id_livro')
             ->select('s.*', 'c.nome as cliente', 'c.email as email_cliente',
                 'l.titulo', 'l.quantidade_disponivel')
             ->orderByRaw("CASE WHEN s.status = 'PENDENTE' THEN 0 ELSE 1 END")
             ->orderByDesc('s.data_solicitacao')->limit(200)->get());
+        return response()->json($result);
     }
 
     public function rejectRequest(int $id)
@@ -223,12 +242,13 @@ class AdminController
 
     public function loans()
     {
-        return response()->json(DB::table('emprestimos as e')
+        $result = Cache::remember('admin:loans:v'.Catalog::version(), 30, fn () => DB::table('emprestimos as e')
             ->join('clientes as c', 'e.id_cliente', '=', 'c.id_cliente')
             ->join('livros as l', 'e.id_livro', '=', 'l.id_livro')
             ->select('e.*', 'c.nome as cliente', 'l.titulo')
             ->orderByRaw("CASE WHEN e.status = 'EMPRESTADO' THEN 0 ELSE 1 END")
             ->orderByDesc('e.data_retirada')->limit(200)->get());
+        return response()->json($result);
     }
 
     public function returnLoan(int $id)

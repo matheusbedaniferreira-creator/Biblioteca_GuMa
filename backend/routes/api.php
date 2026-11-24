@@ -11,8 +11,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['web', 'no.cache'])->group(function () {
     Route::get('/health', fn () => response()->json(['ok' => true, 'service' => 'biblioteca-api', 'auth' => 'server-session']));
     Route::get('/auth/csrf', [SessionController::class, 'csrf']);
-    Route::post('/auth/login', [SessionController::class, 'login'])->middleware('throttle:30,1');
-    Route::post('/auth/register', [SessionController::class, 'register'])->middleware('throttle:30,1');
+    Route::post('/auth/login', [SessionController::class, 'login'])->middleware('throttle:120,1');
+    Route::post('/auth/register', [SessionController::class, 'register'])->middleware('throttle:120,1');
     Route::post('/auth/logout', [SessionController::class, 'logout']);
     Route::get('/auth/google', [SessionController::class, 'google'])->middleware('throttle:10,1');
     Route::get('/auth/google/callback', [SessionController::class, 'googleCallback'])->middleware('throttle:10,1');
@@ -21,7 +21,7 @@ Route::middleware(['web', 'no.cache'])->group(function () {
     Route::get('/livros/destaques', [CatalogController::class, 'highlights']);
     Route::get('/livros/{id}', [CatalogController::class, 'show'])->whereNumber('id');
 
-    Route::middleware(['supabase.auth', 'throttle:60,1'])->group(function () {
+    Route::middleware(['supabase.auth', 'throttle:300,1'])->group(function () {
         Route::get('/auth/me', [SessionController::class, 'me']);
         Route::get('/me', [MeController::class, 'show']);
         Route::patch('/me', [MeController::class, 'update']);
