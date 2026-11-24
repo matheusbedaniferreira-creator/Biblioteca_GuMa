@@ -3,13 +3,19 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   ArrowRight,
   ArrowUpRight,
-  BookOpenText,
-  BookmarkCheck,
-  Clock,
   Search,
 } from 'lucide-react';
 import { api } from '../lib/api';
 import BookCard from '../components/BookCard';
+
+const quickTopics = [
+  'Literatura brasileira',
+  'Distopia',
+  'Romance clássico',
+  'Ficção científica',
+  'Fábula',
+  'História',
+];
 
 const heroBooks = [
   { title: '1984', author: 'George Orwell', tone: 'terracotta' },
@@ -60,7 +66,7 @@ export default function Home() {
   return <>
     <section className="hero"><div className="container hero-grid">
       <div className="hero-copy">
-        <h1>Todo livro abre <em>um novo mundo.</em></h1>
+        <h1>Todo livro abre um novo mundo.</h1>
         <p>Pesquise no acervo da biblioteca, reserve seu exemplar online e acompanhe prazos de devolução em um só lugar.</p>
         <form className="hero-search" onSubmit={e => { e.preventDefault(); navigate(`/catalogo?q=${encodeURIComponent(query)}`); }}>
           <Search size={20}/><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Buscar por título, autor ou tema..." aria-label="Pesquisar livros"/><button aria-label="Buscar livros" type="submit"><ArrowRight size={20}/></button>
@@ -79,7 +85,15 @@ export default function Home() {
       </div>
     </div></section>
 
-    <section className="benefits"><div className="container benefit-grid"><div><BookOpenText size={22}/><span><strong>Acervo completo</strong><small>Busque títulos locais e no Google Books</small></span></div><div><Clock size={22}/><span><strong>Retirada rápida</strong><small>Solicite pelo site e retire na biblioteca</small></span></div><div><BookmarkCheck size={22}/><span><strong>Estante organizada</strong><small>Acompanhe seus empréstimos e prazos</small></span></div></div></section>
+    <section className="topic-bar"><div className="container topic-bar-inner">
+      <span className="topic-label">Explorar por tema</span>
+      <div className="topic-chips">
+        {quickTopics.map(topic => (
+          <Link key={topic} className="topic-chip" to={`/catalogo?q=${encodeURIComponent(topic)}`}>{topic}</Link>
+        ))}
+        <Link className="topic-chip topic-chip-all" to="/catalogo">Ver todos <ArrowRight size={14}/></Link>
+      </div>
+    </div></section>
 
     <div className="container collections">
       {!loading && collections.destaques.length > 0 && (
