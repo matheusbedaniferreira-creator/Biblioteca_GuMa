@@ -141,8 +141,29 @@ export default function Admin() {
     return () => clearTimeout(timer);
   }, [loanBookSearch, authenticated]);
   const visibleBooks = books;
-  return <div className="admin-layout"><aside className="admin-sidebar"><div className="sidebar-logo"><BookOpenText size={26}/> <span>GuMa</span><small>GESTÃO</small></div><div className="sidebar-label">ESPAÇO ADMINISTRATIVO</div><nav>{tabs.map(([key, Icon, label]) => <button key={key} onClick={() => { setTab(key); setError(''); setNotice(''); }} className={tab === key ? 'side-item selected' : 'side-item'}><Icon size={19}/>{label}{key === 'requests' && stats?.solicitacoes_pendentes > 0 && <b>{stats.solicitacoes_pendentes}</b>}</button>)}</nav><div className="sidebar-bottom"><span className="avatar-small">{profile?.bibliotecario?.nome?.charAt(0) || 'B'}</span><div><strong>{profile?.bibliotecario?.nome || 'Bibliotecário'}</strong><small>Equipe autorizada</small></div></div></aside>
-    <div className="admin-content"><div className="admin-topbar"><div><span className="eyebrow muted">GERENCIAMENTO DA BIBLIOTECA</span><h1>{tabs.find(x => x[0] === tab)?.[2]}</h1></div><button className="button button-outline button-small" onClick={() => run(fetchAll, 'Dados atualizados.')} disabled={busy}><RefreshCw size={16}/> Atualizar</button></div>
+  return <div className="admin-layout admin-single-col">
+    <div className="admin-content">
+      <div className="admin-topbar">
+        <div>
+          <span className="eyebrow muted">GERENCIAMENTO DA BIBLIOTECA</span>
+          <h1>{tabs.find(x => x[0] === tab)?.[2]}</h1>
+        </div>
+        <button className="button button-outline button-small" onClick={() => run(fetchAll, 'Dados atualizados.')} disabled={busy}><RefreshCw size={16}/> Atualizar</button>
+      </div>
+      <nav className="admin-tabs-bar" aria-label="Seções do painel administrativo">
+        {tabs.map(([key, Icon, label]) => (
+          <button
+            key={key}
+            type="button"
+            onClick={() => { setTab(key); setError(''); setNotice(''); }}
+            className={tab === key ? 'admin-tab-pill active' : 'admin-tab-pill'}
+          >
+            <Icon size={16}/>
+            <span>{label}</span>
+            {key === 'requests' && stats?.solicitacoes_pendentes > 0 && <b>{stats.solicitacoes_pendentes}</b>}
+          </button>
+        ))}
+      </nav>
       <Notice message={error} onClose={() => setError('')}/><Notice message={notice} kind="success" onClose={() => setNotice('')}/>
       {tab === 'overview' && <><div className="stat-grid">{[
         ['Livros cadastrados', stats?.livros, BookOpenText], ['Exemplares disponíveis', stats?.exemplares_disponiveis, LibraryBig],
