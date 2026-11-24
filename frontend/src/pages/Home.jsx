@@ -453,26 +453,6 @@ export default function Home() {
             </div>
           </section>
 
-          {/* Mais procurados (do banco) */}
-          {!loading && highlights?.mais_procurados?.length > 0 && (
-            <section className="editorial-section">
-              <div className="editorial-section-head">
-                <div>
-                  <h2>Mais procurados</h2>
-                  <p>Os títulos com mais solicitações pelos leitores da GuMa.</p>
-                </div>
-                <Link className="text-link" to="/catalogo">
-                  Explorar catálogo <ArrowUpRight size={17}/>
-                </Link>
-              </div>
-              <div className="book-grid">
-                {highlights.mais_procurados.slice(0, 4).map((b) => (
-                  <BookCard key={b.id_livro} book={b}/>
-                ))}
-              </div>
-            </section>
-          )}
-
           {/* Banner de cadastro */}
           <section className="editorial-cta-banner">
             <div>
