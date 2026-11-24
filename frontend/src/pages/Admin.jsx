@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ArrowRight, BookOpenText, CheckCircle2, ClipboardList, LayoutDashboard, LibraryBig, Plus, RefreshCw, Search, Users, X } from 'lucide-react';
+import { ArrowRight, BookOpenText, CheckCircle2, ClipboardList, LayoutDashboard, LibraryBig, Plus, RefreshCw, Search, Trash2, Users, X } from 'lucide-react';
 import { api, dateTime, localDate, statusText } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import Notice from '../components/Notice';
@@ -74,6 +74,12 @@ export default function Admin() {
     const ok = await run(() => api(editingId ? `/admin/livros/${editingId}` : '/admin/livros', {
       method: editingId ? 'PATCH' : 'POST', body: toBookPayload(book),
     }), editingId ? 'Livro atualizado com sucesso.' : 'Livro cadastrado com sucesso.');
+    if (ok) { setEditingId(null); setBook(emptyBook); }
+  }
+  async function deleteBook() {
+    if (!editingId) return;
+    if (!window.confirm(`Tem certeza que deseja excluir "${book.titulo}" (#${editingId}) do acervo?`)) return;
+    const ok = await run(() => api(`/admin/livros/${editingId}`, { method: 'DELETE' }), 'Livro excluído com sucesso.');
     if (ok) { setEditingId(null); setBook(emptyBook); }
   }
   function editBook(b) {
@@ -160,6 +166,7 @@ export default function Admin() {
             <label>Sinopse<textarea rows={4} value={book.sinopse || ''} onChange={e => setBook({ ...book, sinopse: e.target.value })} placeholder="Conte um pouco sobre a obra…"/></label>
             <label className="check-label"><input type="checkbox" checked={Boolean(book.destaque)} onChange={e => setBook({ ...book, destaque: e.target.checked })}/> Exibir como recomendado na página inicial</label>
             <button className="button button-dark full" disabled={busy}>{busy ? 'Salvando…' : editingId ? 'Salvar alterações' : 'Cadastrar livro'} <ArrowRight size={17}/></button>
+            {editingId && <button type="button" className="button button-danger full" disabled={busy} onClick={deleteBook}><Trash2 size={17}/> Excluir livro</button>}
             <small className="muted">O estoque disponível é calculado pelo banco. Alterar o total preserva os empréstimos ativos.</small>
           </form></section></div>}
       {tab === 'requests' && <section className="white-panel"><div className="panel-heading"><div><span className="eyebrow muted">PEDIDOS DE LEITORES</span><h2>Solicitações recebidas</h2></div></div><div className="stack-items">{requests.map(r => <div key={r.id_solicitacao} className="admin-request-item"><div className="request-details"><strong>{r.titulo}</strong><span>{r.cliente} · {r.email_cliente}</span><small>Solicitado em {dateTime(r.data_solicitacao)} · {r.quantidade_disponivel} exemplar(es) no estoque</small></div><div className="request-actions"><span className={`status-tag status-${r.status.toLowerCase()}`}>{statusText[r.status]}</span>{r.status === 'PENDENTE' && <><label className="date-inline">Devolver até<input type="date" min={todayPlus(0)} value={dueDates[r.id_solicitacao] || todayPlus()} onChange={e => setDueDates({ ...dueDates, [r.id_solicitacao]: e.target.value })}/></label><button disabled={busy || r.quantidade_disponivel < 1} className="button button-dark button-small" onClick={() => approve(r)}><CheckCircle2 size={16}/> Confirmar retirada</button><button disabled={busy} className="button button-outline button-small" onClick={() => reject(r)}>Recusar</button></>}</div></div>)}{!requests.length && <div className="table-empty">Nenhuma solicitação recebida.</div>}</div></section>}

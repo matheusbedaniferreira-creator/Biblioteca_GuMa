@@ -134,6 +134,33 @@ class AdminController
         });
     }
 
+    public function deleteBook(Request $request, int $id)
+    {
+        return DB::transaction(function () use ($request, $id) {
+            $book = DB::table('livros')->where('id_livro', $id)->lockForUpdate()->first();
+            if (!$book) return response()->json(['message' => 'Livro não encontrado.'], 404);
+            if (DB::table('emprestimos')->where('id_livro', $id)->exists()) {
+                return response()->json([
+                    'message' => 'Não é possível excluir este livro porque existem empréstimos registrados no histórico. Zere a quantidade total para indisponibilizá-lo.',
+                ], 409);
+            }
+            if (DB::table('solicitacoes')->where('id_livro', $id)->where('status', 'PENDENTE')->exists()) {
+                return response()->json([
+                    'message' => 'Existem solicitações pendentes para este livro. Recuse ou finalize os pedidos antes de excluir.',
+                ], 409);
+            }
+            DB::table('solicitacoes')->where('id_livro', $id)->delete();
+            DB::table('livros')->where('id_livro', $id)->delete();
+            Catalog::bumpVersion();
+            Log::info('Livro excluido do catalogo', [
+                'livro_id' => $id,
+                'titulo' => $book->titulo,
+                'bibliotecario_id' => $request->attributes->get('bibliotecario')?->id_bibliotecario,
+            ]);
+            return response()->json(['message' => 'Livro excluído com sucesso.']);
+        });
+    }
+
     public function customers(Request $request)
     {
         $term = $request->filled('q') ? mb_substr($request->query('q'), 0, 100) : '';

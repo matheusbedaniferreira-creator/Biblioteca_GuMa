@@ -39,6 +39,7 @@ Route::middleware(['web', 'no.cache'])->group(function () {
             Route::get('/livros', [AdminController::class, 'books']);
             Route::post('/livros', [AdminController::class, 'createBook']);
             Route::patch('/livros/{id}', [AdminController::class, 'updateBook'])->whereNumber('id');
+            Route::delete('/livros/{id}', [AdminController::class, 'deleteBook'])->whereNumber('id');
             Route::get('/clientes', [AdminController::class, 'customers']);
             Route::get('/solicitacoes', [AdminController::class, 'requests']);
             Route::post('/solicitacoes/{id}/emprestar', [AdminController::class, 'approveRequest'])->whereNumber('id');
