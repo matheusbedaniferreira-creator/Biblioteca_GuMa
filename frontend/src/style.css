@@ -12,8 +12,16 @@
 .carousel-controls{display:flex;gap:18px;justify-content:center;align-items:center;margin-top:16px}.carousel-controls .carousel-dots{margin:0}.carousel-play-toggle{background:none;border:0;color:#315b4a;font-size:.78rem;display:flex;align-items:center;gap:5px}.youtube-backup{position:absolute;bottom:8px;right:12px;background:#0d281dc9;color:white;border-radius:6px;padding:5px 10px;font-size:.75rem;text-decoration:underline}.video-frame{position:relative}.security-page{padding-top:65px;padding-bottom:75px}.security-page .page-top{max-width:900px}.security-page .security-grid{margin-top:20px}.security-page .security-card{min-height:210px}
 
 /* Refined editorial layout */
-.hero-photo{display:flex;align-items:center;justify-content:center;padding:36px 0}
-.hero-photo img{width:100%;max-height:430px;object-fit:cover;border-radius:var(--r-lg);box-shadow:0 20px 45px rgba(24,63,54,.14);border:1px solid #dce3d9}
+.hero-shelf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:end;padding:36px 0 42px;border-bottom:2px solid #d5ddd2}
+.shelf-book{display:flex;flex-direction:column;justify-content:space-between;height:270px;padding:22px 18px;border-radius:3px var(--r-md) var(--r-md) 3px;color:#f9f6ee;position:relative;box-shadow:inset 10px 0 0 rgba(0,0,0,.18),inset -4px 0 0 rgba(255,255,255,.14),0 14px 28px rgba(20,44,35,.14);transition:transform .2s ease,box-shadow .2s ease}
+.shelf-book:hover{transform:translateY(-8px);box-shadow:inset 10px 0 0 rgba(0,0,0,.18),inset -4px 0 0 rgba(255,255,255,.14),0 22px 36px rgba(20,44,35,.2)}
+.shelf-forest{background:#1c473c;height:300px}
+.shelf-terracotta{background:#9b5d42;height:262px}
+.shelf-ochre{background:#b4874e;height:248px;color:#1d352c}
+.shelf-author{font-size:.66rem;text-transform:uppercase;letter-spacing:.12em;opacity:.82;font-weight:700}
+.shelf-title{font-family:'Playfair Display',Georgia,serif;font-size:1.35rem;line-height:1.18;font-weight:600}
+.shelf-spine-mark{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;opacity:.65;border-top:1px solid currentColor;padding-top:10px}
+@media(max-width:900px){.hero-shelf{padding:12px 0 32px;gap:12px}.shelf-book{height:210px;padding:16px 12px}.shelf-forest{height:235px}.shelf-terracotta{height:205px}.shelf-ochre{height:195px}.shelf-title{font-size:1.05rem}}
 .footer-links{display:flex;align-items:center;gap:22px}
 .footer-links a:hover{color:#184539}
 .recommended-card{display:block;border-radius:var(--r-md);transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}

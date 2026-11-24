@@ -10,7 +10,12 @@ import {
 } from 'lucide-react';
 import { api } from '../lib/api';
 import BookCard from '../components/BookCard';
-import featuredBooksImage from '../assets/featured-books-guma.webp';
+
+const heroBooks = [
+  { title: '1984', author: 'George Orwell', tone: 'terracotta' },
+  { title: 'Dom Casmurro', author: 'Machado de Assis', tone: 'forest' },
+  { title: 'O Pequeno Príncipe', author: 'Saint-Exupéry', tone: 'ochre' },
+];
 
 const recommendedShelf = [
   {
@@ -61,8 +66,14 @@ export default function Home() {
           <Search size={20}/><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Buscar por título, autor ou tema..." aria-label="Pesquisar livros"/><button aria-label="Buscar livros" type="submit"><ArrowRight size={20}/></button>
         </form>
       </div>
-      <div className="hero-photo">
-        <img src={featuredBooksImage} alt="Livros em destaque na biblioteca GuMa"/>
+      <div className="hero-shelf" aria-label="Livros em destaque">
+        {heroBooks.map(book => (
+          <Link key={book.title} to={`/catalogo?q=${encodeURIComponent(book.title)}`} className={`shelf-book shelf-${book.tone}`}>
+            <span className="shelf-author">{book.author}</span>
+            <strong className="shelf-title">{book.title}</strong>
+            <span className="shelf-spine-mark">GuMa</span>
+          </Link>
+        ))}
       </div>
     </div></section>
 
