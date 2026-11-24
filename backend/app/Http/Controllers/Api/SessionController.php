@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Client\ConnectionException;
@@ -191,6 +192,9 @@ class SessionController
     public function logout(Request $request)
     {
         $access = $request->session()->get('supa_access');
+        if ($access) {
+            Cache::forget('supa_auth:'.hash('sha256', $access));
+        }
         if ($access && $this->ready()) {
             try {
                 // Revoga sessao do Supabase, quando acessivel; o logout local e imediato.

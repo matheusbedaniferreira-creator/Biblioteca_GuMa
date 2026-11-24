@@ -94,6 +94,7 @@ class AdminController
         $data['destaque'] = $data['destaque'] ?? false;
         // O trigger SQL define quantidade_disponivel a partir de quantidade_total.
         $id = DB::table('livros')->insertGetId($data, 'id_livro');
+        Catalog::bumpVersion();
         Log::info('Livro cadastrado no catalogo', ['livro_id' => $id, 'bibliotecario_id' => $request->attributes->get('bibliotecario')?->id_bibliotecario]);
         return response()->json(Catalog::query()->where('l.id_livro', $id)->first(), 201);
     }
@@ -113,6 +114,7 @@ class AdminController
             }
             if ($data) {
                 DB::table('livros')->where('id_livro', $id)->update($data);
+                Catalog::bumpVersion();
                 Log::info('Livro atualizado', ['livro_id' => $id, 'bibliotecario_id' => request()->attributes->get('bibliotecario')?->id_bibliotecario]);
             }
             return response()->json(Catalog::query()->where('l.id_livro', $id)->first());
@@ -146,6 +148,7 @@ class AdminController
         $updated = DB::table('solicitacoes')->where('id_solicitacao', $id)
             ->where('status', 'PENDENTE')->update(['status' => 'RECUSADA']);
         if ($updated) {
+            Catalog::bumpVersion();
             Log::info('Solicitacao recusada', ['solicitacao_id' => $id, 'bibliotecario_id' => request()->attributes->get('bibliotecario')?->id_bibliotecario]);
         }
         return $updated ? response()->json(['message' => 'Solicitação recusada.'])
@@ -208,6 +211,7 @@ class AdminController
             'data_retirada' => now('UTC'),
             'status' => 'EMPRESTADO',
         ], 'id_emprestimo');
+        Catalog::bumpVersion();
         Log::info('Emprestimo registrado', [
             'emprestimo_id' => $loanId,
             'cliente_id' => $clienteId,
@@ -240,6 +244,7 @@ class AdminController
             $staff = request()->attributes->get('bibliotecario');
             DB::selectOne("SELECT set_config('request.jwt.claim.sub', ?, true)", [$staff->auth_user_id]);
             DB::table('emprestimos')->where('id_emprestimo', $id)->update(['status' => 'DEVOLVIDO']);
+            Catalog::bumpVersion();
             Log::info('Devolucao de emprestimo registrada', ['emprestimo_id' => $id, 'bibliotecario_id' => $staff->id_bibliotecario]);
             return response()->json(['message' => 'Devolução registrada. Estoque atualizado.']);
         });

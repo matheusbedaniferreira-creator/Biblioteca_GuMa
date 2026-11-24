@@ -3,6 +3,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,17 +34,28 @@ class AuthenticateSupabase
                 $request->session()->put('supa_refresh', $credentials['refresh_token']);
                 $request->session()->put('supa_expiry', time() + (int) ($credentials['expires_in'] ?? 3600));
             }
-            $result = $client->withToken($token)->get($url.'/auth/v1/user');
-            if (!$result->ok() || !is_string($result->json('id'))) return $this->expired($request);
-            $userId = $result->json('id');
-            $cliente = DB::table('clientes')->where('auth_user_id', $userId)->first();
-            $staff = DB::table('bibliotecarios')->where('auth_user_id', $userId)->first();
-            if (!$cliente && !$staff) return response()->json(['message' => 'Perfil inexistente. Execute o SQL inicial e o trigger de cadastro.'], 403);
+            $cacheKey = 'supa_auth:'.hash('sha256', $token);
+            $resolved = Cache::get($cacheKey);
+            if (!$resolved) {
+                $result = $client->withToken($token)->get($url.'/auth/v1/user');
+                if (!$result->ok() || !is_string($result->json('id'))) return $this->expired($request);
+                $userId = $result->json('id');
+                $cliente = DB::table('clientes')->where('auth_user_id', $userId)->first();
+                $staff = DB::table('bibliotecarios')->where('auth_user_id', $userId)->first();
+                if (!$cliente && !$staff) return response()->json(['message' => 'Perfil inexistente. Execute o SQL inicial e o trigger de cadastro.'], 403);
+                $resolved = [
+                    'user_id' => $userId,
+                    'email' => $result->json('email'),
+                    'cliente' => $cliente,
+                    'bibliotecario' => $staff,
+                ];
+                Cache::put($cacheKey, $resolved, 30);
+            }
 
-            $request->attributes->set('auth_user_id', $userId);
-            $request->attributes->set('auth_user_public', ['id' => $userId, 'email' => $result->json('email')]);
-            $request->attributes->set('cliente', $cliente);
-            $request->attributes->set('bibliotecario', $staff);
+            $request->attributes->set('auth_user_id', $resolved['user_id']);
+            $request->attributes->set('auth_user_public', ['id' => $resolved['user_id'], 'email' => $resolved['email']]);
+            $request->attributes->set('cliente', $resolved['cliente']);
+            $request->attributes->set('bibliotecario', $resolved['bibliotecario']);
             return $next($request);
         } catch (\Illuminate\Http\Client\ConnectionException $e) {
             return response()->json(['message' => 'Supabase Auth indisponivel.'], 503);

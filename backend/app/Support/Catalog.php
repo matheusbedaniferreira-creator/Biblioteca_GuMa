@@ -1,10 +1,21 @@
 <?php
 namespace App\Support;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 final class Catalog
 {
+    public static function version(): int
+    {
+        return (int) Cache::get('catalog:version', 1);
+    }
+
+    public static function bumpVersion(): void
+    {
+        Cache::forever('catalog:version', self::version() + 1);
+    }
+
     /** Retorna APENAS campos publicos; nenhum dado de cliente e exposto. */
     public static function query()
     {

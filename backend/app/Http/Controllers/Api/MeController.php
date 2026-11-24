@@ -1,7 +1,9 @@
 <?php
 namespace App\Http\Controllers\Api;
 
+use App\Support\Catalog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -26,6 +28,9 @@ class MeController
             'telefone' => 'nullable|string|max:20',
         ]);
         DB::table('clientes')->where('id_cliente', $cliente->id_cliente)->update($data);
+        if ($token = $request->session()->get('supa_access')) {
+            Cache::forget('supa_auth:'.hash('sha256', $token));
+        }
         Log::info('Perfil de cliente atualizado', ['cliente_id' => $cliente->id_cliente]);
         return response()->json(DB::table('clientes')->where('id_cliente', $cliente->id_cliente)->first());
     }
@@ -76,6 +81,7 @@ class MeController
                 'id_cliente' => $cliente->id_cliente, 'id_livro' => $id,
                 'status' => 'PENDENTE', 'data_solicitacao' => now(),
             ], 'id_solicitacao');
+            Catalog::bumpVersion();
             Log::info('Solicitacao de emprestimo criada', [
                 'solicitacao_id' => $solicitacaoId,
                 'cliente_id' => $cliente->id_cliente,
@@ -94,6 +100,7 @@ class MeController
             ->where('id_cliente', $cliente->id_cliente)->where('status', 'PENDENTE')
             ->update(['status' => 'CANCELADA']);
         if ($updated) {
+            Catalog::bumpVersion();
             Log::info('Solicitacao cancelada pelo cliente', ['solicitacao_id' => $id, 'cliente_id' => $cliente->id_cliente]);
         }
         return $updated ? response()->json(['message' => 'Solicitação cancelada.'])
