@@ -3,12 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   ArrowRight,
   ArrowUpRight,
+  BookOpenText,
+  BookmarkCheck,
+  Clock,
   Search,
-  Settings,
 } from 'lucide-react';
 import { api } from '../lib/api';
 import BookCard from '../components/BookCard';
-import DragonIllustration from '../components/DragonIllustration';
 
 const heroBooks = [
   { title: '1984', author: 'George Orwell', tone: 'terracotta' },
@@ -57,11 +58,7 @@ export default function Home() {
   }, []);
 
   return <>
-    <section className="hero">
-      <div className="hero-dragon-bg" aria-hidden="true">
-        <DragonIllustration variant="hero"/>
-      </div>
-      <div className="container hero-grid">
+    <section className="hero"><div className="container hero-grid">
       <div className="hero-copy">
         <h1>Todo livro abre <em>um novo mundo.</em></h1>
         <p>Pesquise no acervo da biblioteca, reserve seu exemplar online e acompanhe prazos de devolução em um só lugar.</p>
@@ -82,11 +79,7 @@ export default function Home() {
       </div>
     </div></section>
 
-    <section className="benefits"><div className="container pink-gears-strip" aria-label="Engrenagens em movimento">
-      {Array.from({ length: 12 }).map((_, i) => (
-        <Settings key={i} size={i % 3 === 0 ? 28 : i % 2 === 0 ? 22 : 18} className={`pink-gear gear-step-${i % 3}`}/>
-      ))}
-    </div></section>
+    <section className="benefits"><div className="container benefit-grid"><div><BookOpenText size={22}/><span><strong>Acervo completo</strong><small>Busque títulos locais e no Google Books</small></span></div><div><Clock size={22}/><span><strong>Retirada rápida</strong><small>Solicite pelo site e retire na biblioteca</small></span></div><div><BookmarkCheck size={22}/><span><strong>Estante organizada</strong><small>Acompanhe seus empréstimos e prazos</small></span></div></div></section>
 
     <div className="container collections">
       {!loading && collections.destaques.length > 0 && (
@@ -138,10 +131,6 @@ export default function Home() {
           <p>Acompanhe solicitações, prazos de devolução e mantenha sua estante organizada.</p>
         </div>
         <Link className="button button-cream" to="/login">Entrar ou cadastrar <ArrowRight size={18}/></Link>
-      </section>
-
-      <section className="dragon-stage" aria-label="Guardião da biblioteca">
-        <DragonIllustration variant="stage"/>
       </section>
     </div>
   </>;
