@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { api } from '../lib/api';
 import BookCard from '../components/BookCard';
+import HeroDragon3D from '../components/HeroDragon3D';
 
 const quickTopics = [
   'Literatura brasileira',
@@ -64,7 +65,7 @@ export default function Home() {
   }, []);
 
   return <>
-    <section className="hero"><div className="container hero-grid">
+    <section className="hero"><HeroDragon3D/><div className="container hero-grid">
       <div className="hero-copy">
         <h1>Todo livro abre um novo mundo.</h1>
         <p>Pesquise no acervo da biblioteca, reserve seu exemplar online e acompanhe prazos de devolução em um só lugar.</p>
