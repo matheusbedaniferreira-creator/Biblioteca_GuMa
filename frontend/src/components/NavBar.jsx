@@ -1,28 +1,68 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { BookOpenText, LibraryBig, LayoutDashboard, LogIn, LogOut, UserRound, Menu } from 'lucide-react';
+import {
+  BookOpen,
+  BookOpenText,
+  Bookmark,
+  Compass,
+  Home,
+  LayoutDashboard,
+  LogIn,
+  LogOut,
+  ShieldCheck,
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useState } from 'react';
 
 export default function NavBar() {
   const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
-  const nav = (path, label) => <NavLink to={path} onClick={() => setOpen(false)} className={({ isActive }) => isActive ? 'navlink active' : 'navlink'}>{label}</NavLink>;
-  return <header className="site-header">
-    <div className="container topbar">
-      <Link to="/" className="brand"><span className="brand-icon"><BookOpenText size={25}/></span><span>GuMa</span></Link>
-      <button className="mobile-menu icon-button" aria-label="Abrir menu" onClick={() => setOpen(!open)}><Menu size={22}/></button>
-      <nav className={`main-nav ${open ? 'open' : ''}`}>
-        {nav('/', 'Início')}{nav('/catalogo', 'Catálogo')}{nav('/descobrir', 'Google Books')}
-        {user && nav('/minha-conta', 'Minha estante')}
-        {profile?.role === 'bibliotecario' && nav('/admin', 'Painel')}
+
+  const item = (to, label, Icon, end = false) => (
+    <NavLink
+      to={to}
+      end={end}
+      title={label}
+      aria-label={label}
+      className={({ isActive }) => (isActive ? 'rail-btn active' : 'rail-btn')}
+    >
+      <Icon size={19} strokeWidth={1.9}/>
+    </NavLink>
+  );
+
+  return (
+    <aside className="icon-rail" aria-label="Navegação principal">
+      <Link to="/" className="rail-brand" title="GuMa | Biblioteca Digital" aria-label="GuMa Início">
+        <BookOpenText size={24} strokeWidth={2.1}/>
+      </Link>
+
+      <nav className="rail-nav">
+        {item('/', 'Início', Home, true)}
+        {item('/catalogo', 'Catálogo', BookOpen)}
+        {item('/descobrir', 'Google Books', Compass)}
+        {item('/minha-conta', 'Minha estante', Bookmark)}
+        {profile?.role === 'bibliotecario' && item('/admin', 'Painel administrativo', LayoutDashboard)}
+        {item('/seguranca', 'Segurança', ShieldCheck)}
       </nav>
-      <div className="nav-actions">
-        {user ? <>
-          <Link className="user-pill" to={profile?.role === 'bibliotecario' ? '/admin' : '/minha-conta'}><UserRound size={16}/><span>{profile?.cliente?.nome?.split(' ')[0] || user.email?.split('@')[0]}</span></Link>
-          <button title="Sair" aria-label="Sair" className="icon-button logout" onClick={async () => { await signOut(); navigate('/'); }}><LogOut size={19}/></button>
-        </> : <Link to="/login" className="button button-dark button-small"><LogIn size={16}/> Entrar</Link>}
+
+      <div className="rail-bottom">
+        {user ? (
+          <button
+            type="button"
+            className="rail-btn rail-foot-btn"
+            title="Sair da conta"
+            aria-label="Sair da conta"
+            onClick={async () => {
+              await signOut();
+              navigate('/');
+            }}
+          >
+            <LogOut size={18} strokeWidth={1.9}/>
+          </button>
+        ) : (
+          <Link to="/login" className="rail-btn rail-foot-btn" title="Entrar" aria-label="Entrar">
+            <LogIn size={18} strokeWidth={1.9}/>
+          </Link>
+        )}
       </div>
-    </div>
-  </header>;
+    </aside>
+  );
 }
